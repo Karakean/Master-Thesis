@@ -1,0 +1,108 @@
+---
+- name: Set up Tor with hidden services
+  hosts: webservers
+  become: yes
+  tasks:
+
+    # - name: Update APT cache
+    #   apt:
+    #     update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name: 
+          - apt-transport-https
+          - gnupg
+        state: present
+
+    - name: Get CPU architecture
+      command: dpkg --print-architecture
+      register: cpu_architecture
+      changed_when: false
+
+    - name: Get distribution codename
+      command: lsb_release -c --short
+      register: distribution
+      changed_when: false
+
+    - name: Add Tor Project repository
+      copy:
+        content: |
+          deb     [signed-by=/usr/share/keyrings/deb.torproject.org-keyring.gpg] https://deb.torproject.org/torproject.org {{ distribution.stdout }} main
+          deb-src [signed-by=/usr/share/keyrings/deb.torproject.org-keyring.gpg] https://deb.torproject.org/torproject.org {{ distribution.stdout }} main
+        dest: /etc/apt/sources.list.d/tor.list
+
+    - name: Download and add Tor GPG key
+      shell: |
+        wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc |
+        gpg --dearmor |
+        tee /usr/share/keyrings/deb.torproject.org-keyring.gpg >/dev/null
+
+    - name: Update APT cache
+      apt:
+        update_cache: yes
+
+    - name: Install Tor and the Tor keyring package
+      apt:
+        name: 
+          - tor
+          - deb.torproject.org-keyring
+        state: present
+
+    - name: Create directories for onion services
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: debian-tor
+        group: debian-tor
+        mode: '0700'
+      with_items:
+        - /var/lib/tor/onion_service
+        - /var/lib/tor/single_onion_service
+    
+    - name: Set ownership and permissions for /var/lib/tor/
+      file:
+        path: /var/lib/tor/
+        state: directory
+        owner: debian-tor
+        group: debian-tor
+        mode: '0700'
+        recurse: yes
+
+    - name: Append hidden service configuration to torrc
+      blockinfile:
+        path: /etc/tor/torrc
+        block: |
+          HiddenServiceDir /var/lib/tor/onion_service/
+          HiddenServicePort 80 127.0.0.1:80
+
+          HiddenServiceDir /var/lib/tor/single_onion_service/
+          HiddenServicePort 8080 127.0.0.1:8080
+          SocksPort 0
+          HiddenServiceNonAnonymousMode 1
+          HiddenServiceSingleHopMode 1
+        create: yes
+
+    - name: Restart Tor service
+      service:
+        name: tor
+        state: restarted
+
+    - name: Read and display the hostname for onion_service
+      command: cat /var/lib/tor/onion_service/hostname
+      register: onion_service_hostname
+      changed_when: false
+
+    - name: Display the hostname for onion_service
+      debug:
+        msg: "onion_service hostname: {{ onion_service_hostname.stdout }}"
+
+    - name: Read and display the hostname for single_onion_service
+      command: cat /var/lib/tor/single_onion_service/hostname
+      register: single_onion_service_hostname
+      changed_when: false
+
+    - name: Display the hostname for single_onion_service
+      debug:
+        msg: "single_onion_service hostname: {{ single_onion_service_hostname.stdout }}"
+

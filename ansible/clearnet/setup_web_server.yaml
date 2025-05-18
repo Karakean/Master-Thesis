@@ -1,0 +1,52 @@
+---
+- name: Web server setup
+  hosts: webservers
+  become: yes
+
+  tasks:
+    - name: Update APT package cache
+      apt:
+        update_cache: yes
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Create document root
+      file:
+        path: /var/www/html
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
+    - name: Copy local HTML file to the server
+      copy:
+        src: ../../website/index.html
+        dest: /var/www/html/index.html
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Create images directory
+      file:
+        path: /var/www/html/images
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
+    - name: Copy local image to the server
+      copy:
+        src: ../../website/images/image.jpg
+        dest: /var/www/html/images/image.jpg
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Ensure Nginx is started and enabled
+      service:
+        name: nginx
+        state: started
+        enabled: yes
