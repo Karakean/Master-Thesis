@@ -1,1 +1,3 @@
-shared/private_key.pem
+private_key.pem
+web_server_private_key.pem
+client_private_key.pem

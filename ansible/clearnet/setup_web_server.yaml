@@ -23,7 +23,7 @@
 
     - name: Copy local HTML file to the server
       copy:
-        src: ../../website/index.html
+        src: ../../measurements-server/index.html
         dest: /var/www/html/index.html
         owner: www-data
         group: www-data
@@ -39,7 +39,7 @@
 
     - name: Copy local image to the server
       copy:
-        src: ../../website/images/image.jpg
+        src: ../../measurements-server/images/image.jpg
         dest: /var/www/html/images/image.jpg
         owner: www-data
         group: www-data

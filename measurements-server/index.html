@@ -1,0 +1,95 @@
+<!-- <!DOCTYPE html>
+<html>
+    <head>
+        <title>ACN test</title>
+    </head>
+    <body>
+        <h1>ACN test</h1>
+        <img src="images/image.jpg" alt="Comparison of ACNs" width="640" height="348">
+    </body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Latency & Jitter Test</title>
+</head>
+<body>
+  <h1>Latency & Jitter Measurement</h1>
+  <button id="start">Start Test</button>
+  <pre id="results"></pre>
+
+  <script>
+    const btn = document.getElementById('start');
+    const out = document.getElementById('results');
+
+    btn.addEventListener('click', () => {
+      console.log('Starting latency test...');
+      const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const ws = new WebSocket(`${wsProtocol}//${location.host}`);
+      ws.addEventListener('open', () => runTest(ws));
+      ws.addEventListener('error', err => console.error('WebSocket error:', err));
+    });
+
+    function runTest(ws) {
+      const samples = 100;
+      const times = [];
+      let count = 0;
+
+      ws.addEventListener('message', async event => {
+        let raw;
+        if (typeof event.data === 'string') {
+          raw = event.data;
+        } else if (event.data instanceof Blob) {
+          raw = await event.data.text();
+        } else {
+          console.warn('Unsupported data type:', event.data);
+          return;
+        }
+        console.log('Raw message data:', raw);
+        const sentTs = parseFloat(raw);
+        if (!isNaN(sentTs)) {
+          const now = performance.now();
+          const rtt = now - sentTs;
+          times.push(rtt);
+          console.log(`Sample ${count + 1}: ${rtt.toFixed(2)} ms`);
+        } else {
+          console.warn('Could not parse timestamp:', raw);
+        }
+
+        count++;
+        if (count < samples) {
+          sendPing(ws);
+        } else {
+          report(times);
+          ws.close();
+        }
+      });
+
+      sendPing(ws);
+
+      function sendPing(ws) {
+        const t = performance.now();
+        ws.send(t.toString());
+      }
+    }
+
+    function report(times) {
+      if (times.length === 0) {
+        out.textContent = 'No RTT samples were collected. Check console for errors.';
+        return;
+      }
+      const mean = times.reduce((a, b) => a + b, 0) / times.length;
+      let jitter = 0;
+      if (times.length > 1) {
+        const diffs = times.slice(1).map((t, i) => Math.abs(t - times[i]));
+        jitter = diffs.reduce((a, b) => a + b, 0) / diffs.length;
+      }
+      out.textContent = `Mean RTT: ${mean.toFixed(2)} ms
+Jitter: ${jitter.toFixed(2)} ms`;
+    }
+  </script>
+</body>
+</html>

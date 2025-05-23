@@ -38,9 +38,10 @@ chmod 700 -R /var/lib/tor/
 
 cat <<EOF >> /etc/tor/torrc
 HiddenServiceDir /var/lib/tor/onion_service/
-HiddenServicePort 80 127.0.0.1:80
+HiddenServicePort 80 127.0.0.1:3000
 EOF
 
 systemctl restart tor
 
+# cat /var/lib/tor/onion_service/hostname
 # journalctl -e -u tor@default
