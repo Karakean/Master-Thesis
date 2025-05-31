@@ -1,0 +1,48 @@
+version: '3.9'
+services:
+  single-hop-proxy:
+    build:
+      context: .
+    ports:
+      - "${SINGLE_HOP_PROXY_PORT}:${SINGLE_HOP_PROXY_PORT}"
+    env_file:
+      .env
+    environment:
+      KEY_MATERIAL: ${SINGLE_HOP_PROXY_KEY_MATERIAL}
+      PORT: ${SINGLE_HOP_PROXY_PORT}
+  entry-node:
+    build:
+      context: .
+    ports:
+      - "${ENTRY_NODE_PORT}:${ENTRY_NODE_PORT}"
+    env_file:
+      .env
+    environment:
+      KEY_MATERIAL: ${ENTRY_NODE_KEY_MATERIAL}
+      PORT: ${ENTRY_NODE_PORT}
+      NEXT_NODE_HOSTNAME: ${MIDDLE_NODE_HOSTNAME}
+      NEXT_NODE_PORT: ${MIDDLE_NODE_PORT}
+    depends_on:
+      middle-node:
+        condition: service_started
+  middle-node:
+    build:
+      context: .
+    env_file:
+      .env
+    environment:
+      KEY_MATERIAL: ${MIDDLE_NODE_KEY_MATERIAL}
+      PORT: ${MIDDLE_NODE_PORT}
+      NEXT_NODE_HOSTNAME: ${EXIT_NODE_HOSTNAME}
+      NEXT_NODE_PORT: ${EXIT_NODE_PORT}
+    depends_on:
+      exit-node:
+        condition: service_started
+  exit-node:
+    build:
+      context: .
+    env_file:
+      .env
+    environment:
+      KEY_MATERIAL: ${EXIT_NODE_KEY_MATERIAL}
+      PORT: ${EXIT_NODE_PORT}
