@@ -2,7 +2,7 @@ import socket
 import time
 
 HOST = '127.0.0.1'
-PORT = 2139
+PORT = 2136
 BUFFER_SIZE = 1024
 DURATION = 10
 MAX_SENT = 20 * 1024 * 1024 * DURATION # we do not expect more than 20MB/s so it makes no sense to send more 

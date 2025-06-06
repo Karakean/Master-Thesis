@@ -8,14 +8,14 @@
       apt:
         update_cache: yes
 
-    - name: Install Nginx
+    - name: Install NPM
       apt:
-        name: nginx
+        name: npm
         state: present
 
-    - name: Create document root
+    - name: Create website directory
       file:
-        path: /var/www/html
+        path: /home/admin/web-server
         state: directory
         owner: www-data
         group: www-data

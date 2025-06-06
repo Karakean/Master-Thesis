@@ -2,7 +2,7 @@ import socket
 import time
 import statistics
 
-HOST = "mmfoqrnji6fbnn9p34ety7rw78xua5ewk1fgzscjq4uqxzw351sy.loki"
+HOST = "127.0.0.1"
 PORT = 2135
 TIMEOUT = 10
 TRIALS = 50

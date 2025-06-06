@@ -21,52 +21,17 @@ resource "aws_key_pair" "web_server_key" {
 }
 
 resource "aws_security_group" "web_server_security_group" {
-
+  
   ingress {
-    from_port   = 5201
-    to_port     = 5201
+    from_port   = 2135
+    to_port     = 2135
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port   = 5201
-    to_port     = 5201
-    protocol    = "udp"
-    cidr_blocks = [var.current_ip]
-  }
-
-  ingress {
-    from_port   = 3000
-    to_port     = 3000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 3000
-    to_port     = 3000
-    protocol    = "udp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 7657
-    to_port     = 7657
-    protocol    = "tcp"
-    cidr_blocks = [var.current_ip]
-  }
-
-  ingress {
-    from_port   = 7070
-    to_port     = 7070
+    from_port   = 2136
+    to_port     = 2136
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -79,8 +44,8 @@ resource "aws_security_group" "web_server_security_group" {
   }
 
   ingress {
-    from_port   = 2135
-    to_port     = 2135
+    from_port   = 2139
+    to_port     = 2139
     protocol    = "udp"
     cidr_blocks = ["0.0.0.0/0"]
   }

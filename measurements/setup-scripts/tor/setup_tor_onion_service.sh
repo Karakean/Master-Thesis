@@ -18,8 +18,9 @@ wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8C
 apt update
 apt install tor deb.torproject.org-keyring
 
-mkdir /var/lib/tor/onion_service
-mkdir /var/lib/tor/single_onion_service
+mkdir /var/lib/tor/tcp_latency_onion_service
+mkdir /var/lib/tor/tcp_throughput_onion_service
+# mkdir /var/lib/tor/single_onion_service
 chown -R debian-tor /var/lib/tor/
 chmod 700 -R /var/lib/tor/
 
@@ -37,8 +38,11 @@ chmod 700 -R /var/lib/tor/
 # EOF
 
 cat <<EOF >> /etc/tor/torrc
-HiddenServiceDir /var/lib/tor/onion_service/
-HiddenServicePort 80 127.0.0.1:3000
+HiddenServiceDir /var/lib/tor/tcp_latency_onion_service/
+HiddenServicePort 2135 127.0.0.1:2135
+
+HiddenServiceDir /var/lib/tor/tcp_throughput_onion_service/
+HiddenServicePort 2136 127.0.0.1:2136
 EOF
 
 systemctl restart tor

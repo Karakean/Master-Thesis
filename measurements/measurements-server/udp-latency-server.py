@@ -1,7 +1,7 @@
 import socket
 
 HOST = '0.0.0.0'
-PORT = 2136
+PORT = 2138
 BUFFER_SIZE = 1024
 
 def run_server():

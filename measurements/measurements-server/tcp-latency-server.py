@@ -8,7 +8,7 @@ def run_server():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((HOST, PORT))
     server_socket.listen(5)
-    print(f"TCP server is running on port {PORT}...")
+    print(f"TCP latency server is running on port {PORT}...")
 
     while True:
         client_socket, client_addr = server_socket.accept()

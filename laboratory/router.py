@@ -19,7 +19,7 @@ NEXT_NODE_PORT = int(os.environ.get('NEXT_NODE_PORT', "-1"))
 def release_mix_buffer(socket: socket.socket, messages_buffer: list) -> None:
     logging.info("Mix node threshold reached, sending buffered messages.")
     for msg in messages_buffer:
-        time.sleep(random.random() + 1) # Additional delay
+        time.sleep(random.random() + 0.1) # Additional delay
         send(socket, msg)
     messages_buffer.clear()
 
@@ -37,7 +37,7 @@ def handle_message(socket: socket.socket, content: str, messages_buffer: list) -
     if data_json.get("forward_to") is None:
         return
     data = data_json["data"]
-    if ROUTER_MODE == "ONION-ROUTING":
+    if ROUTER_MODE == "onion-routing":
         send(socket, data)
     else:
         handle_mix_message(socket, messages_buffer, data)
