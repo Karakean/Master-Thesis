@@ -1,0 +1,161 @@
+\chapter{Theoretical introduction}
+
+
+\section{Introduction}
+This chapter describes concepts that will be essential for understanding the material covered in the future chapters.
+
+\section{Anonymity and privacy}
+The definition of anonymity used in this thesis is based on a paper “A terminology for talking about privacy by data minimization” \cite{anon-terminology}.
+According to the paper: “Anonymity of a subject means that the subject is not identifiable within a set of subjects, the anonymity set.”. Another important property in anonymous communication systems is unlikability. According to the same paper: “Unlinkability of two or more items of interest (IOIs, e.g., subjects, messages, actions, ...) from an attacker’s perspective means that within the system (comprising these and possibly other items), the attacker cannot sufficiently distinguish whether these IOIs are related or not.”
+Pseudonymity refers to the use of pseudonyms as identifiers, where a pseudonym is an identifier of a subject other than one of their real names.
+Privacy is the right to keep personal matters and relationships secret, as well as the ability to determine when, how, and which information about oneself is revealed.
+Anonymity can be considered as a method to achieve privacy.
+
+\subsection{Why is anonymity and privacy needed?}
+
+For the same reason that in all well-prosper democratic countries there are anonymous elections. No one should be obliged to reveal information they do not wish to disclose; individuals should have the right to decide to whom and what information they reveal. In recent years, privacy has been increasingly compromised as personal data have become highly valuable to large corporations. Data are sometimes said to be the petroleum of the 21st century, highlighting their significant value in the modern economy.
+As with many technologies, anonymity can be used for both positive and negative purposes. Although negative uses often receive more attention in the media, this thesis will primarily focus on beneficial use cases to provide a balanced perspective.
+It should be noted that attempts to restrict anonymous networks primarily affect users with legitimate intentions, as malicious actors are often able to circumvent such restrictions and may use alternative solutions that do not require scalability.
+Some organisations claim they do not retain the content of communications, but only metadata - such as who communicates with whom, when, where, and how often. NSA General Counsel Stewart Baker said: “metadata absolutely tells you everything about somebody’s life. If you have enough metadata, you don’t really need content.” and General Michael Hayden, former NSA director, added that “We kill people based on metadata” \cite{metadata-kill}. Metadata, in fact, should not be neglected when it comes to the privacy topic.
+According to the European Data Protection Supervisor, privacy is a fundamental human right and a component of a sustainable democracy \cite{privacy-eu}.
+
+\subsection{Anonymity by design and anonymity by policy}
+Sometimes service providers, VPN providers in particular, advertise their services as anonymous, although in reality they can deanonymise users on demand, they just claim that they would not do it or that they keep logs of their user activity. However, history shows that such assurances are not always reliable and that users cannot be certain that anonymous service providers will not disclose or sell their information \cite{vpns}. This approach is known as anonymity by policy.
+On the other hand, anonymity by design makes it impossible for the service provider to reveal the identity of the service users by creating a service or network in such a way. In other words, there is no need to trust any third party other than the code itself, which you can verify in most cases because they are usually open source. Proper privacy can only be achieved with anonymity by design.
+
+
+\section{Client-server and peer-to-peer models}
+
+\subsection{Client-server model}
+The client-server model is currently the most popular computing paradigm. Essentially, it assumes that many clients connect to centralised servers. Today, these servers are typically run in large data centres controlled by major organisations.
+
+\subsection{Peer-to-peer model}
+Peer-to-peer (P2P) computing is a decentralised network architecture where each participant (peer) has equal privileges and can initiate or complete transactions without relying on a centralised server. While it may be surprising, the Internet and its predecessors were not designed to be client-server oriented. In fact, the basic idea of peer-to-peer computing dates back to the Arpanet, the predecessor of the Internet, and the first Request for Comments \cite{rfc1}, which was associated with it. Arpanet was created in the way that it would be resilient to a potential nuclear attack, and therefore it was not centralised.
+
+
+\section{Distributed Hash Tables}
+Distributed Hash Table is a distributed system of storing data in the form of key-value pairs. For example, we can think of our key-value pairs as positions in a dictionary where the key “Kashubians” would have the value “ethnic group native to the Pomerania region in northern Poland”. In DHT, keys exist in the form of hashes. Thanks to this fact, the length of a key is not an issue as all keys have equal lengths, which is a property of hash functions. All possible keys create a keyspace. Thanks to another important property of hash functions, keys will be evenly distributed across the whole keyspace. If we consider hashes big enough, for example, of 256-bit length, then collisions should not be an issue either; that is another desired property of hash functions.
+Usually, the keyspace is big. If we consider 256-bit hashes we have $2^{256}$ possible keys that correspond to some values. All needs to be stored somewhere, and one machine or computer is not always enough. Even if the data would fit in one device, it is often desired for storage to be distributed in order to gain several other benefits like the avoidance of a single point of failure or an ability to avoid trusting only one central entity that stores all the data. 
+It is important to establish which keys will be assigned to which machine. There are several approaches to this topic, and the ones that are essential for the future sections will be described.
+
+\subsection{Chord}
+Chord was one of the first distributed hash tables (DHTs), proposed in 2001 \cite{chord}. Chord aimed to address the following issues related to development of peer-to-peer systems and applications:
+\begin{itemize}
+    \item Load balancing - Chord evenly distributes keys over nodes providing load balancing.
+    \item Decentralisation - Chord has fully distributed and hierarchy-less nature, removing single point of failures that were major issues with projects like Napster, and increasing robustness.
+    \item Scalability - as the time complexity of the lookup in the Chord network is O(log(n)), it allows for large numbers of nodes in the network.
+    \item Availability - Chord automatically adjusts to changes in the network like node joins and leaves, keeping the network functioning regardless.
+    \item Flexible naming - The structure of the keys is not constrained; therefore, there is a wide range of possibilities of mapping names to Chord keys.
+\end{itemize}
+In the Chord paper, authors also point out potential use cases for Chord, including cooperative mirroring where entities in the network can distribute load across themselves - mirror their distributions, time-shared storage that solves the problem of sharing content by not-always available machines, distributed indices for keyword search and large-scale combinatorial search where nodes cooperate computationally in order to get a solution to a given problem.
+Chord has the structure of a ring where keys with bit identifiers are mapped. Due to consistent hashing, the keys are evenly distributed throughout the ring. The keys are stored in nodes and the nodes are machines within the network. If a network uses m-bit identifiers, then the network consists of the maximum $2^m$ nodes and keys, as the nodes and keys are in the same identifier space. Each node has a set of pointers called fingers, each finger points to another node that is $2^k$ jumps away, where $0 <= k <= m-1$, which means the “shortest” finger points to the next node in the ring and the “longest” one points to the node that is exactly half a ring away. The basic principle of an operation in the Chord network is simple: the keys are stored at the node that is their closest predecessor. Combining that with the fact of using finger pointers, in the worst case during the lookup the distance is cut in half; it is the reason why the lookup has O(log(n) time complexity. It is important to note that in most cases it will be a much smaller number as the keys are uniformly distributed, and the worst case occurs rarely. For example, in the $2^12$ node network in theory there should be 12 hops, but according to the paper the most probable number is 6 hops.
+
+\subsection{Kademlia}
+Kademlia is a specific type of DHT and was proposed in 2002 \cite{kademlia}. In the Kademlia system, each node is placed in the keyspace. Each node stores values that are near him. In order to calculate the distance it uses the XOR operation metric. XOR operation can show the difference between two numbers as the output of bits with the same value will be 0 (0,0 or 1,1)  and 1 if the bit is different (0,1 or 1,0). This implies that the distance between a given node to itself is 0 (as XOR of every bit with itself always gives 0 as a result) and the distance to any other key is always more than 0, assuming no collisions. Also, the order of the numbers in the XOR operation does not matter as XOR(A,B) is equal to XOR(B,A).
+The distances from a given node to other nodes can be visualised as a binary tree, which will also be this node routing table. It is important to note that this tree does not represent node identifiers but distances. Identifiers are stored as values on the leaves. A node in this binary tree represents change in a given bit (value 1) or lack of change (value 0); therefore, the leaf most left (all zeros) will be the node itself. The height of the tree represents the size of the keyspace as the keyspace will have a size of $2^{heights}$.
+For every possible divergence, that is, any difference in a bit that occurs after a series of zeros, a bucket is created. There is an arbitrary limit of nodes set in each bucket. The buckets that diverge earlier, for example, due to the difference on the first bit, have more possible space to fill, but they have the same limit as the ones that diverge later or in other words the ones that are closer to the node whose distance tree that is considered. This leads to an important property of the Kademlia system: there is more knowledge about the closer nodes than about the further ones. Thanks to this property, we have another benefit - O(log(n))-hop routing. Each time a node looks for a specific value by asking the most similar node, it usually halves the distance to that value.
+
+
+\section{Information security attributes}
+Information security, or InfoSec, is a practice of protecting information. Several attributes can be distinguished, slightly varying depending on the definition. From the point of view of this work, the most important will be four of them:
+\begin{enumerate}
+    \item Confidentiality - Only authorized persons can access data. In terms of cryptography and encrypted messages, it comes down to the ownership of the appropriate decryption key.
+    \item Authenticity - Identity of the person that performs a certain operation is the same as declared.
+    \item Integrity - Data were not modified in an unauthorized way.
+    \item Non-repudiation - persons taking part in the information share process cannot deny their participation in it.
+\end{enumerate}
+
+
+\section{Cryptography basics}
+
+\subsection{What is cryptology, cryptography and cryptanalysis?}
+Cryptology is the science of secure communication. Cryptography is a science of concealing the meaning of a message. Cryptanalysis, on the other hand, is a science of breaking the concealment provided by cryptography. In essence, it can be said that cryptology is combined cryptography and cryptanalysis.
+
+\subsection{Symmetric cryptography}
+In symmetric cryptography, one shared key is used for both sides of a communication to encrypt and decrypt messages. Symmetric cryptography ensures confidentiality, as (ideally) the key is needed in order to read the content of a message, and the key is only shared between two sides of the communication that are often referred to as Alice and Bob. Symmetric cryptography ciphers can be divided into two subcategories:
+\begin{enumerate}
+    \item Block ciphers - Fixed-size blocks are encrypted. In case the data does not fit the block, a padding is used.
+    \item Stream ciphers - One bit or byte is encrypted at a time.
+\end{enumerate}
+
+\subsection{Asymmetric cryptography}
+In asymmetric cryptography, or public-key cryptography, each entity uses a pair of keys instead of one shared symmetric key. The private key is a part that, as the name suggests, is specific to the entity exclusively and cannot be revealed to anyone else. However, the public key can be freely distributed. The message encrypted with the public key can only be decrypted with the private key from the same pair. Analogically, the message “encrypted” with the private key can be “decrypted” with the public key, although calling it encryption and decryption does not make much sense as the public key is freely distributed, therefore everyone can read the message. The more appropriate terms that are used in this example are signing and verifying, as if we can decrypt a given message with a certain public key, then we are sure that the one who signed it must be the owner of the private key from the same key pair.
+Encryption with asymmetric cryptography is in general much slower than with symmetric one; therefore, it is most often used for different purposes, such as the digital signature, which will be described later.
+
+\subsubsection{Elliptic-curve cryptography (ECC)}
+An approach to asymmetric cryptography using elliptic curves over finite fields has gained popularity in recent years, although it is not a new technique, as its origin dates back to 1985. ECC is believed to offer the same level of security as other widely used asymmetric cryptographic methods but with significantly shorter key lengths. One of the popular examples of a curve that can be efficiently used in this kind of cryptography is Curve25519.
+
+\subsection{Hash functions}
+Hash function algorithms allow for transformation of any input into a fixed-size output, called a hash, in a deterministic way, which means that each time a certain input produces the same output if the same hash function and its parameters are used. Another important feature of hash functions is its one-sidedness, in that the original input cannot be determined based on the produced hash. The hash function should also produce output that is uniformly distributed, and it should be hard to find two inputs that produce the same output - this situation is called a hash collision.
+
+\subsection{Digital signature}
+One of the most popular use cases of asymmetric cryptography is the digital signature. It is a mathematical scheme for verifying the authenticity, integrity, and non-repudiation of origin for the given message. In a simplified way, it works as given: The sender generates a private/public key pair and distributes the public key. He generates a hash of the message he has written and signs this hash with his private key. The receiver receives the message along with the signed hash. As the hash function is known, he creates a hash of the message himself with it, verifies the signed hash, and compares the two result hashes. If they are equal, then the signature is valid.
+
+\subsection{Quantum and post-quantum cryptography}
+Quantum cryptography is the science of using quantum mechanics in cryptography. Quantum cryptography algorithms are designed to work specifically on quantum computers.
+On the other hand, post-quantum cryptography (PQC) refers to the development of cryptographic algorithms that work on traditional machines but that are resistant to potential attacks that use quantum computers.
+
+\subsection{Popular cryptographic algorithms and hash functions}
+\begin{itemize}
+    \item AES - Advanced Encryption Standard, the most popular block cipher today, considered as a safe symmetric cryptography solution, especially with longest possible 256-bit keys. Due to its popularity, it often has dedicated hardware support.
+    \item RSA - one of the first asymmetric cryptography algorithms and still the most popular one. The name RSA is an abbreviation from its creators' surnames: Rivest, Shamir, Adleman. Its security relies on the difficulty of the factoring problem, which means factoring the product of two large prime numbers. It can be used for both encryption and digital signature.
+    \item ElGamal - the second most popular asymmetric cryptography algorithm, after the RSA. It is based on the discrete logarithm problem. It supports both encryption and digital signatures.
+    \item DSA - Digital Signature Algorithm is an asymmetric cryptography algorithm used specifically for the digital signatures, not for the encryption. It is based on the discrete logarithm problem.
+    \item ECDSA - Elliptic Curve DSA is a variant of DSA utilising elliptic-curve cryptography.
+    \item EdDSA - Edwards-curve DSA is a variant of DSA utilising Schnorr signature based on twisted Edwards curves. Even though the name might suggest correlation with ECDSA they both are completely different signature schemes. Ed25519 is a specific example of the EdDSA variant and uses the edwards25519 curve, which is related to the popular Montgomery curve Curve25519. 
+    \item Diffie-Hellman Key Exchange - or simply Diffie-Hellman is a key agreement algorithm that two parties can use in order to agree on a shared secret. The shared secret is converted into keying material, and the keying material is used as a symmetric encryption key. Diffie-Hellman Key Exchange utilises the properties of modular arithmetics.
+    \item ECDH - Elliptic-curve version of the DH key agreement. Usually, Curve25519 is chosen as a curve because it is fast and not proprietary.
+    \item SHA - Secure Hash Algorithms are a family of hash functions. Currently, there are four versions of SHA: \begin{enumerate}
+        \item SHA-0 - refers to the original hash function with 160-bit output that was published under the name SHA.
+        \item SHA-1 - improved version of SHA-0, still utilising 160 bits. NSA designed it as part of the DSA algorithm.
+        \item SHA-2 - a family of two hash functions designed by NSA: SHA-256 and SHA-512. The postfix in the name determines the length of the output of the hash function (256 bits or 512 bits). There are also modified and truncated versions of these two standards: SHA-224, SHA-384, SHA-512/224, and SHA-512/256.
+        \item SHA-3 - hash function, also known as Keccak. Although the hash lengths are the same as in the SHA-2 family, the inner workings of the algorithm are significantly different.
+    \end{enumerate}
+\end{itemize}
+
+
+\section{ISO/OSI reference model and TCP/IP suite}
+Two most popular networking models used today are ISO/OSI and TCP/IP. They both help us to analyse the end-to-end communication between two parties. They both consist of several layers: ISO/OSI consists of 7, while TCP/IP of 4. Each of these layers has certain clear goals to fulfill. Each layer has certain protocols and protocol-specific units of information composed of user data and control information called protocol data units (PDUs).
+
+The ISO/OSI model has the following layers:
+\begin{enumerate}
+    \item Physical layer - the first and the lowest layer, responsible for transmission of unstructured data between a device and transmission medium. The PDU of the physical layer is a bit.
+    \item Data link layer - the second layer, responsible for node-to-node data transfer between two directly connected devices. In this layer, we can distinguish two sublayers:
+    \begin{itemize}
+        \item Media Access Control - usually implemented in hardware, manages access control, encapsulates and decapsulates data, adds header and trailer
+        \item Logical/Data Link Control (LLC/DLC) - is responsible for communication with physical and network layers and for the flow control.
+    \end{itemize}
+    The PDU of the data link layer is a frame.
+    In real-world examples, technologies designated for the lowest layers usually cover both the physical and data link layer. Examples include Ethernet, the most popular wired local area network (LAN) technology today, or 802.11, sometimes vulgarly referred to as Wi-Fi, the most popular wireless LAN technology.
+    \item Network layer - the third layer, responsible for addressing hosts, connectionless communication, routing, and relaying messages. It is also the first layer that is "sentient" of the network, which means that there is something outside the current machine or current link. The most popular protocol of this layer is the IP protocol in two versions: IPv4 and IPv6. The PDU of the network layer is a packet.
+    \item Transport layer - the fourth layer, responsible for interprocess communication. Its role is to address ports and control connection, flow and errors as well as message multiplexation and demultiplexation. There are two most popular protocols in this layer: TCP, responsible for reliable communication with the cost of delays, and UDP, responsible for unreliable communication, but with smaller delays. The PDU in the transport layer is a segment for TCP and a datagram for UDP.
+    \item Session layer - the fifth layer, responsible for maintaining and managing interprocess sessions. The PDU of the session layer is data.
+    \item Presentation layer - The sixth layer, sometimes referred to as the syntax layer, is responsible for translating, coding, and decoding data between applications. The PDU of the presentation layer is also data.
+    \item Application layer - the seventh and the last layer in the ISO/OSI model application layer is responsible for providing an interface for communication between applications. Once again, the PDU of the application layer is data.
+\end{enumerate}
+For the sake of simplicity, it can be said that in the TCP/IP model there are four layers that correspond to one or more ISO/OSI layers:
+\begin{enumerate}
+    \item Link layer - the layer that serves as a combination of ISO/OSI first and second layer.
+    \item Internet layer - the layer that corresponds to the network layer from the ISO/OSI model.
+    \item Transport layer - the layer that corresponds to the layer with the same name from the ISO/OSI model.
+    \item Application layer - the layer that combines session, presentation, and application layers from the ISO/OSI model.
+\end{enumerate}
+The ISO/OSI was a model created from the ground up in the late 1970s and early 1980s as a framework based on the set of tasks that needs to be fulfilled in order to have reliable communication and each layer in this model was assigned a specific role. One of the most criticised elements of the ISO/OSI model were layers 5 and 6 which were thought to be an exaggeration, as they can be easily integrated with the application layer. That is also why often, when referring to the application layer, the fifth, sixth, and seventh layers are grouped together. Regardless of the criticism, the model is still used as a reference model.
+TCP/IP is an evolving model whose origins date back to ARPANET \cite{rfc1}. It has a simpler, more concise, and pragmatic approach compared to the ISO/OSI model, and it has specific protocol solutions. An important difference between ISO/OSI and TCP/IP models is the fact that in the ISO/OSI the communication is only possible between adjacent layers, while in TCP/IP any layer can refer to any other layer, including the same layer. An example can be the IP protocol utilising ICMP and vice versa.
+This paper will focus on layers 3-7 from the ISO/OSI model (or layers 2-4 from the TCP/IP model). When referring to the seventh layer from the ISO/OSI model, fifth and sixth will also be included implicitly in the reference for the sake of simplicity.
+
+
+\section{Blockchain and cryptocurrencies}
+Blockchain is a shared, immutable, and distributed ledger that records information in a growing list of entries called blocks. Blocks are chained together using hash functions. Each new block depends on the integrity of the previous blocks in an unaltered stage and therefore the history of a blockchain cannot be altered. Blockchains are often used as the backbones of various cryptocurrencies, digital currencies based on cryptography, where transactions are written as records on the blockchain with an appropriate consensus mechanism.
+In today’s world, cash usage is declining as countries shift toward cashless payments. This trend poses a major threat to privacy. Unlike cash transactions, which are private and typically known only to the two parties involved, cashless payments lack this privacy. Every cashless payment is visible to the government, tax authorities, banks, and possibly many more entities. This information can be used against the people who make such transactions. Cryptocurrencies offer a way to restore the privacy of transactions. They allow for private peer-to-peer transactions between users. Additionally, cryptocurrencies have excellent transfer properties, enabling reasonably quick transfers, regardless of the day of the week, if it is a national holiday or not. Unlike traditional bank transfers, cryptocurrency transactions cannot be blocked or restricted by financial institutions or government entities.
+
+
+\section{Network protocols overview}
+\begin{itemize}
+    \item IP - Network layer communication protocol in the ISO/OSI model and the Internet layer protocol in the TCP/IP responsible for connectionless communication, relaying datagrams and addressing hosts. It is the most popular protocol for this layer. IP is often associated with convergence as it serves as a universal protocol that supports both upper and lower layer protocols. The IP protocol exists in two versions: IPv4 and IPv6. The IPv4 was introduced first and it had some significant flaws, among which the most critical one is the address space - it was not predicted that the Internet would be so huge that 4 billions of potential addresses would not be enough; as we know today, it is definitely not. There are many actions taken to postpone the issues related to the exhaustion problem as much as possible like the introduction of classless addressing, public/private address distinction with NAT mechanism, but the only viable long-term solution is moving on to the newer version of the IP protocol, IPv6. It can have up to $2^{128}$ addresses, for a comparison there are about ${2^62}$ sand grains on Earth, so it is more than enough for any possible use cases that we can predict today.
+    \item TCP - one of the two most popular transport layer protocols responsible for interprocess connection-based communication. Provides connection, flow, and error control. TCP is used when reliability is more important than potential delays.
+    \item UDP - second of the two most popular transport layer protocols responsible for connectionless interprocess communication. It lacks error control and flow control. It does not guarantee the delivery of a datagram or its correct order; however, these mechanisms can be implemented in the higher layers.
+    \item TLS - Transport Layer Security (TLS) is a protocol widely used for ensuring confidentiality and authentication for client-server applications. The predecessor of the TLS protocol was SSL; therefore, TLS is sometimes still referred to as SSL for historical reasons. 
+    \item SOCKS - The SOCKS protocol allows network packets to be exchanged between the client and the server with an intermediary proxy server between. Currently, the latest version of this protocol is SOCKS5.
+    \item BitTorrent - BitTorrent is a peer-to-peer protocol for file sharing. Its important feature is decentralisation, meaning that there is no possibility to take down one central server as it was for some other peer-to-peer file-sharing solutions like Napster. Users utilise BitTorrent clients, the programs that allow them to share files via BitTorrent. The communication is optionally assisted by the BitTorrent trackers that provide available files and find peer users, known as seeds. The other option, depending on the BitTorrent client implementation, is, for example, a distributed hash table as an alternative for the trackers. In BitTorrent files are divided into pieces and the file that holds a list of these pieces is called Torrent. After downloading a piece, the user starts sharing it with other peers, becoming one of the sources of this piece (seed). Each piece is associated with its hash to provide integrity.
+\end{itemize}
