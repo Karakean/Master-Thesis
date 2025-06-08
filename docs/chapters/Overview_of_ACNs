@@ -348,9 +348,46 @@ Lokinet’s infrastructure underlines a popular instant messaging app - Session,
 There are also newer propositions that aim to address issues with the original onion routing design or with the Tor network, as it is considered a direct successor to the onion routing design. Examples of such networks include HORNET (High-speed onion routing at the Network Layer) \cite{hornet}, TARANET (Traffic-Analysis Resistant Anonymity at the Network Layer) \cite{taranet} and Dovetail \cite{dovetail}. They introduced potential improvements in terms of latency or traffic analysis; although requiring changes in the network layer, they would be difficult to perform.
 
 
-\begin{figure}[htbp]
-	%\centering
- 	  \resizebox{.88\textwidth}{!}{\input{Images/acns-classification.latex}}
-	\caption{Classification of anonymity tools}
-	\label{fig:docFormatsPL}
+\begin{figure}[ht]
+\centering
+\forestset{
+  default preamble={
+    for tree={
+      font=\sffamily,
+      grow'=south,
+      parent anchor=south,
+      child anchor=north,
+      edge={-},
+      align=center,
+      l sep=30pt,
+      s sep=6pt,
+      anchor=center,
+    }
+  },
+  bold/.style={font=\sffamily\bfseries},
+  example/.style={font=\sffamily\itshape}
+}
+\begin{forest}
+[\textbf{anonymous communication networks}, bold
+  [\textbf{single-hop proxies}, bold
+    [\textit{VPN services}, example]
+  ]
+    [\textbf{Mix-nets}, bold
+      [\textbf{Loopix-based}, bold
+        [\textit{Nym}, example]
+      ]
+    ]
+    [\textbf{onion routing}, bold
+      [\textit{Tor}, example]
+      [\textit{Lokinet}, example]
+      [\textbf{garlic routing}, bold
+        [\textit{I2P}, example]
+      ]
+    ]
+  [\textbf{anonymous publication systems}, bold
+    [\textit{Freenet/Hyphanet}, example]
+  ]
+]
+\end{forest}
+\caption{Classification of anonymous communication networks}
 \end{figure}
