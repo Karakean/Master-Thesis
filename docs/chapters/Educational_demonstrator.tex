@@ -1,0 +1,51 @@
+\chapter{Educational demonstrator}
+
+\section{Scope of the laboratory}
+This laboratory is designed to help students understand how anonymous communication networks (ACNs) work in practice, what their main features are, and where they can be used. The lab covers both the theory and practical exercises to show differences between various anonymity solutions, starting from basic proxies and moving to more advanced systems. Students will learn about:
+\begin{itemize}
+    \item The difference between anonymity by policy and anonymity by design, and why this matters.
+    \item The basics of Mix-nets and onion routing, and how they affect anonymity.
+    \item The most popular ACNs today: Tor, I2P, Lokinet, and Nym—how they work, what they are good at, and what problems they are facing.
+    \item The real use cases for each of these systems, including web browsing, hidden services, and file sharing.
+\end{itemize}
+
+\section{Theoretical introduction}
+Anonymous communication networks are systems built to hide who is talking to whom. Firstly deployed were simple solutions like proxies or remailers, where you had to trust the operator not to reveal your identity. This is called \textbf{anonymity by policy}—you are only anonymous if the operator sticks to the rules. History shows this is not enough, as providers sometimes keep logs or are forced to give up user data. These solutions, therefore, cannot be treated as truly anonymous communication networks.
+
+\textbf{Anonymity by design} is a different approach: the network is built so that not even the operator can find out who the users are. This is achieved due to cryptography, usually joined by layered encryption, and careful design. This is the basis for modern ACNs.
+
+The first idea for a strong anonymous network came from David Chaum, who described Mix-nets in the 1980s. A Mix-net network consists of mixes - dedicated servers that receive messages, batch, shuffle (mix), and encrypt them, so that it is hard to link the sender to the receiver. Their main drawback is that they are slow and not good for latency-vulnerable use cases like web browsing. Later, onion routing was invented for lower latency, thanks to its circuit-switched nature - sending data through an established bidirectional circuit, making it possible to browse the web comfortably while staying anonymous; however, this introduced a significant drawback in terms of traffic analysis vulnerability. Nonetheless, onion routing turned out to be a dominant strategy and is widely used today. Mix-nets seem to have been forgotten for some time; however, recently they are appearing more often in the literature, mostly thanks to the Loopix design that allows using Mix-net architecture with relatively low latency, although still higher than the one introduced by the onion routing-based solutions.
+
+The four main ACNs used today are:
+\begin{enumerate}
+    \item \textbf{Tor}: it is the most popular ACN. It uses onion routing and thousands of volunteer relays. Tor is good for anonymous web browsing and running hidden websites that can optionally be protected with authorisation mechanisms. Tor is a perfect ACN for accessing normal websites (clearnet) but can be slow or blocked in some countries - that is why they introduced censorship circumvention mechanisms in terms of non-public relays or pluggable transports that can optionally obfuscate the traffic, making it more difficult to classify and block.
+    \item \textbf{I2P}: it is a fully peer-to-peer network using garlic routing, which is a variation of the onion routing. I2P utilises unidirectional tunnels instead of the bidirectional circuits, and users have a lot of freedom in terms of customising tunnels' parameters: they can change the number of inbound/outbound tunnels for specific purposes, make them longer or shorter or even choose variation of tunnel length. All of these aspects makes traffic analysis more difficult as the users have the plausible deniability - it is hard to tell whether a certain user was receving message for himself or was he just passing it through. I2P is good for internal hidden services and especially good for anonymous file sharing due to peer-to-peer file sharing protocols support and volume obfuscation techniques described earlier, but it is not the best tool for accessing the clearnet.
+    \item \textbf{Lokinet}: it works at the network layer and acts like an anonymous VPN for any program, not just browsers. It can in theory work with clearnet, the free exit nodes are often non-functioning but there is a possibility of renting dedicated exit nodes from private sellers or setting up custom exit nodes. The main advantage due to the lower-layer design is smaller latency and jitter.
+    \item \textbf{Nym}: It is a new project based on previously mentioned Loopix. It is made to be resistant to powerful attackers and is best for people who need strong anonymity even if the network is slower. It is accessible as a mode in the NymVPN service, making this network the only officially paid network in this list.
+\end{enumerate}
+
+\section{Course of the laboratory}
+During the lab, students will go through five main practical exercises:
+\begin{enumerate}
+    \item \textbf{Anonymity by policy vs. anonymity by design}: Students will see how single-hop proxies work, check the logs, and notice the weaknesses. Then, they will switch to an ACN setup and compare the difference.
+\item \textbf{Mix-nets and Onion Routing}: Students will send messages using both methods and look at the results. They will see how Mix-nets provide better protection against traffic analysis but with the cost of a larger delay.
+\item \textbf{Browsing clearnet with ACNs}: Students will try to reach regular websites over ACNs, comparing support of the clearnet for each ACN.
+\item \textbf{Hidden Services}: Students will set up a Tor hidden service, first without, then with authorisation keys. They’ll see how this allows access to web pages and SSH services securely.
+\item File sharing with ACNs
+Students will measure download speed for a big file shared over Tor via OnionShare and I2P via I2PSnark. They will compare which is faster and which hides traffic patterns better.
+\end{enumerate}
+
+\section{Laboratory setup}
+Laboratory should be performed on a Debian-based Linux distribution, ideally on Debian 12/Bookworm. Each workstation should have Python, Docker, Firefox, any non-Firefox browser (i.e. DuckDuckGo browser, Opera or Brave), OnionShare, I2P router and Lokinet with GUI installed. I2P router and Lokinet should be turned on in order to establish necessary tunnels and paths in advance. I2P's bandwidth parameters should be changed in both router client and I2PSnark client in order to avoid throttling.
+
+\section{Practical exercises}
+
+\subsection{Anonymity by policy and anonymity by design}
+
+\subsection{Mix-nets and onion routing}
+
+\subsection{Browsing clearnet with ACNs}
+
+\subsection{Hidden services}
+
+\subsection{File sharing with ACNs}
