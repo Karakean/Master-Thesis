@@ -5,19 +5,24 @@ This chapter reviews the history and evolution of Anonymous Communication Networ
 
 \section{History of ACNs}
 The first paper that described the ACN idea is considered to be David Chaum’s master thesis about Mix networks \cite{Chaum81}, written in 1979, published in 1981. Even to this day, most of the anonymous communication systems utilise ideas that were first described by Chaum. Due to his merits for anonymity online, he was repeatedly awarded. The Chaum Mix-nets was ahead of its times, not only in terms of demand for the anonymous communication, but also in terms of the computer power needed for repeatedly performing complex public-key cryptographic operations. It took more than a decade for the first anonymous communication networks to be successfully deployed.
+
 First ACN solutions were remailers - a proxy servers that received messages and acted accordingly to the instructions that were attached to the message.
 The first widely used ACN-like solution was the Penet remailer \cite{penet}, deployed in 1993, however it was not yet utilising Chaum’s concept - it was a simple single-hop pseudonymous remailer, also known as Type 0 remailer, and did not ensure privacy by design. It served as a proxy that stripped the metadata of the message and forwarded it to the recipient with the possibility of reply. The Penet had several security flaws, including lack of encryption and logging user activity, and was eventually discontinued.
+
 Around the same time, although initially less known, the Cypherpunk remailer was introduced, otherwise known as Type I remailer. It was associated with the Cypherpunk movement - a movement that since late 1980s promoted cryptography and privacy for everyone, instead of only the military as it used to be before. It put a strong emphasis on encryption, lack of logging and enabled people to chain their messages through multiple servers - it was the first real life implementation of Chaum’s concepts, although partially.
 The first faithful to the original implementation of Chaum’s Mix-nets design was Mixmaster, also known as Type II remailer, created around 1995. It implemented the most important Mix-nets concepts: layered encryption, batching and mixing and gained significant recognition. Over the years many Mix network-based solutions were introduced, addressing issues related to the previous designs.
+
 Mix-net is not the only design that was proposed. In 1988 David Chaum published a paper about DC-nets \cite{dc-nets} - an alternative approach for achieving anonymity for both sender and receiver. Similarly to the mix networks, it gave a foundation for further researchers and many later designs based their principle of operation on DC-nets. Even though there were attempts of deploying ACNs based on DC-nets, none of the ACNs used today utilise this approach due to several limitations.
+
 Another breakthrough design was onion routing \cite{onion-routing98, onion-routing-internet99}, a low-latency, connection-based, bidirectional communication network, that similarly to the Mix-nets utilise layered encryption. The work on it began in 1995 and was funded by ONR - the science and technology agency for the U.S. Navy. The first paper about the onion routing was released in 1996, however the final version of it was first published in 1997 and a year later it was published in IEEE Journal on Selected Areas in Communication. Most of the ACNs used today use architecture of the onion routing.
 One of the examples is Tor - the most popular ACN today, first deployed in 2002 as a direct successor to the original onion routing idea that was meant to be used by common people. The design was described in 2004 paper \cite{tor-design}. During the years it evolved and introduced many new features that can be seen today.
 Another prominent project that is based on a slightly modified onion routing is I2P - the modification is named Garlic Routing. I2P is a peer-to-peer network - every user also acts as a router. Theoretically, the work on I2P started in 2001; however, the architecture was entirely redesigned in 2003. Similarly to Tor, it is constantly evolving.
 One of the newer onion routing-based ACNs that can be used today is Lokinet - first described in 2018 \cite{loki}. Lokinet implements a custom protocol called LLARP - Low Latency Anonymous Routing Protocol, and contrary to Tor and I2P it is placed on the network layer and can support any IP-based protocol.
+
 While onion routing dominated the scene of ACNs, they have some drawbacks, particularly vulnerability for traffic analysis. Even though the Mix-nets are more resilient to this kind of attack, they suffer from a significant latency. Loopix, proposed by Piotrowska et al. in 2017 \cite{loopix}, is an acceptable-latency Mix-net architecture which led to a new rise in the research on Mix-nets. One of the results of this rise is the Nym network \cite{nym}, first described in 2021. The official launch of NymVPN - a service that allows for the utilisation of the Nym network - was performed in early 2025.
 
 \section{Single-hop proxies}
-The principle of operation of single-hop proxies is straightforward: strip the metadata related to the sender before forwarding it to the recipient. The major advantage of them is their low latency due to the simplicity and the fact that there is only one node between the sender and the receiver. Such a single point of failure, however, is not a desirable characteristic of an anonymous system, regardless of the claims of not keeping sensitive user data, as it imposes anonymity by policy rather than anonymity by design. 
+The principle of operation of single-hop proxies is straightforward: strip the metadata related to the sender before forwarding it to the recipient. The major advantage of them is their low latency due to the simplicity and the fact that there is only one node between the sender and the receiver. Such a single point of failure, however, is not a desirable characteristic of an anonymous system, regardless of the claims of not keeping sensitive user data, as it imposes anonymity by policy rather than anonymity by design. As this architecture does not provide the anonymity by design property, it will not be treated as a proper anonymous communication network, however due to its historical meaning it is mentioned here.
 Notable examples from this category include Penet \cite{penet} and Anonymizer \cite{anonymizer}. Additionally, many VPN services commonly used today can also be considered as examples of this category.
 
 \subsection{Penet}
@@ -35,12 +40,12 @@ In essence, we can say that the sender knows all nodes in the path, each node kn
 The sender can send his message anonymously while the recipient can respond to the untraceable return address, constructed using a real address, two random strings, and public key cryptography. Communication participants exchange these addresses through multiple nodes, but only the addressee can decrypt them.
 In 1964 \cite{Baran1964} Paul Baran, Polish Jewish American engineer, proposed a solution to the traffic analysis problem; the downside of this solution was that it required a trusted common authority. Chaum’s Mix-net network does not need a trusted third party to achieve traffic analysis resilience. 
 Mix-nets also propose digital pseudonyms in order to identify entities online. They are nothing more than public keys that can be used for signature verifications made by an anonymous entity. The authority creates a list of pseudonyms and can decide which are trustworthy and which are not. Pseudonyms, contained in a letter from each entity to the authority, are processed together in a single batch and create together a complete roster. These letters can be additionally protected in order to provide an additional level of security. A person cannot be traced by his pseudonym in the final list; therefore it allows verifying and communicating securely with assured anonymity. 
-One of the major disadvantages of the Mix-net is high latency correlated with public key cryptography, delays and other aspects that are supposed to provide anonymity; therefore, anonymity for more latency-sensitive purposes must use other solutions.
+One of the major disadvantages of the Mix-net is high latency correlated with public key cryptography, delays, and other aspects that are supposed to provide anonymity; therefore, anonymity for more latency-sensitive purposes must use other solutions.
 
 \subsection{Early related designs}
 Various anonymous communication systems utilised concepts from the original Mix-nets design, introducing certain modifications in order to address certain aspects of anonymous communication. 
 Many of these systems were associated with large latencies associated with the Mix-nets architecture that made it impossible to use them in more time-sensitive scenarios like web browsing.
-For these systems we can mention, among others, Babel, an anonymous remailer described in 1996 \cite{babel} which aimed to quantify dimensions of anonymity providing a way of measuring it, as well as enhance the network security. Another example was a paper about Stop-And-Go MIXes (SG-MIXes) \cite{stop-and-go} that introduced random delays in order to be more resilient to traffic analysis and remove the requirement of collecting a fixed-size batch of messages.
+For these systems we can mention, among others, Babel, an anonymous remailer described in 1996 \cite{babel} which aimed to quantify dimensions of anonymity providing a way of measuring it, as well as enhancing the network security. Another example was a paper about Stop-And-Go MIXes (SG-MIXes) \cite{stop-and-go} that introduced random delays in order to be more resilient to traffic analysis and remove the requirement of collecting a fixed-size batch of messages.
 ISDN-MIXes \cite{Pfitzmann91} is another Mix-net-based design from 1991 for untraceable communication for services like telephony. One of its major advantages is a very small bandwidth overhead.
 The first successfully deployed Mix-net-based solutions that gained significant recognition were anonymous remailers.
 In 2000 Web MIXes system \cite{web-mixes} was proposed as one of the first described solutions for Internet browsing utilising Mix-nets. The project was successfully deployed and gained recognition.
@@ -341,12 +346,13 @@ The I2P network allows services to be hosted anonymously in the I2P network. The
 
 \subsection{Lokinet}
 Lokinet is a relatively recent decentralised anonymous network that utilises onion routing architecture. The network was described in the 2018 paper \cite{loki}. It is one of the first networks that introduced economic incentives for the node runners. Lokinet introduces Low Latency Anonymous Routing Protocol (LLARP) for communication within the network. It is said to be a hybrid solution between Tor and I2P. In fact, the design is more similar to the Tor one, including client-server architecture; however, Lokinet, contrary to Tor, does not use semi-centralised directory authorities. Instead, it relies on DHT, similarly to I2P, although LLARP's DHT is built from blockchain. Moreover, LLARP is not restricted to TCP-only traffic like Tor is. Lokinet has formal support for exit nodes, similarly to Tor and contrary to I2P, which requires dedicated outproxies. Similarly to Tor and I2P, Lokinet supports services within the network - SNapps - that work analogically to Tor’s onion services or the services within I2P. Lokinet also introduces a message storage concept, for users that are temporarily offline, that is not present in Tor nor in I2P.
-The biggest difference, however, is the placement in the ISO/OSI model; while Tor and I2P are built on top of the transport layer, Lokinet is built within the network layer and can support any IP-based protocol. 
+The biggest difference, however, is the placement in the ISO/OSI model; while Tor and I2P are built on top of the transport layer, Lokinet is built within the network layer and can support any IP-based protocol.
 Lokinet’s infrastructure underlines a popular instant messaging app - Session, although Session is temporarily switched from utilising Lokinet directly for the sake of simplified Onion Requests due to compatibility issues on various platforms \cite{onion-requests}, however, as the infrastructure is the same, Session user base directly increases the anonymity set of Lokinet. Moreover, the return to Lokinet is planned when the compatibility issues are solved. The return is needed as low latency properties of Lokinet will allow for anonymous voice and video calls, while the current simple Onion Requests mechanism is not able to provide such functionality.
 
 \subsection{Other designs}
 There are also newer propositions that aim to address issues with the original onion routing design or with the Tor network, as it is considered a direct successor to the onion routing design. Examples of such networks include HORNET (High-speed onion routing at the Network Layer) \cite{hornet}, TARANET (Traffic-Analysis Resistant Anonymity at the Network Layer) \cite{taranet} and Dovetail \cite{dovetail}. They introduced potential improvements in terms of latency or traffic analysis; although requiring changes in the network layer, they would be difficult to perform.
 
+\section{Summary}
 
 \begin{figure}[ht]
 \centering
@@ -369,7 +375,7 @@ There are also newer propositions that aim to address issues with the original o
 }
 \begin{forest}
 [\textbf{anonymous communication networks}, bold
-  [\textbf{single-hop proxies}, bold
+  [\textbf{single-hop proxies}, edge=dashed, bold
     [\textit{VPN services}, example]
   ]
     [\textbf{Mix-nets}, bold
@@ -377,6 +383,7 @@ There are also newer propositions that aim to address issues with the original o
         [\textit{Nym}, example]
       ]
     ]
+    [\textbf{DC-nets}, bold]
     [\textbf{onion routing}, bold
       [\textit{Tor}, example]
       [\textit{Lokinet}, example]
@@ -390,4 +397,17 @@ There are also newer propositions that aim to address issues with the original o
 ]
 \end{forest}
 \caption{Classification of anonymous communication networks}
+\label{fig:classification}
 \end{figure}
+
+The classification of anonymous communication networks is shown in \ref{fig:classification}. The tree structure presents the main categories of ACNs that have been developed over the years, highlighting the technical diversity.
+
+At the top of the diagram are all anonymous communication networks. The next level distinguishes five main families: anonymous publication systems, onion routing, Mix-nets, and single-hop proxies. Among these, single-hop proxies are shown with a dashed line. This is to underline that, unlike other branches, single-hop proxies do not provide anonymity by design but only by policy. Because of this, they cannot be considered proper ACNs in the strict sense.
+
+Anonymous publication systems (such as Freenet/Hyphanet) are also present in the classification. While they can provide strong anonymity, their main purpose is very narrow and is strictly based on anonymous publishing and distributed, censorship-resistant storage, and they cannot serve as general-purpose universal networks. For this reason, anonymous publication systems are not included in the comparative analysis in the following chapters.
+
+Another important family included in the classification are DC-nets. While DC-nets have strong theoretical anonymity properties, they are not widely used in practice today due to scalability, performance limitations, and significant bandwidth overhead. However, their unique approach has inspired many later designs and improvements in the field of anonymous communication.
+
+The two other branches represent the main technical directions in ACN development. Mix-nets (and their modern descendant, Loopix-based networks like Nym) and onion routing (including classic Tor, Lokinet, and garlic routing solutions such as I2P) are the most influential approaches, each with their own properties and typical use cases. These designs are the most important for understanding practical anonymity online today.
+
+Because the goal of this work is to compare fully functioning and practically relevant ACNs, the following chapters focus on four representative and currently active networks: Tor, I2P, Lokinet, and Nym. These systems illustrate the main architectures and techniques found in modern anonymous communication, and the analysis will show how their design choices affect their strengths, weaknesses, and best application areas.
