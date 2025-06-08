@@ -1,0 +1,247 @@
+\chapter{Multi-criteria comparative analysis}
+
+\section{Literature-based comparison}
+\begin{table}[!ht]
+\caption{Literature-based comparison of ACNs}
+\label{tab:literature_comparison}
+\small
+\begin{tabular}{|p{0.2\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|}
+\hline
+\textbf{} & \textbf{Tor} & \textbf{I2P} & \textbf{Lokinet} & \textbf{Nym} \\
+\hline
+\textbf{Inception year} & 2002 & 2003* & 2018 & 2019 \\
+\hline
+\textbf{Access} & Free & Free & Free* & Paid \\
+\hline
+\textbf{Anonymisation technique} & Onion Routing & Garlic Routing & Onion Routing & Mix-net \\
+\hline
+\textbf{Architecture} & client-server & peer-to-peer & client-server & client-server \\
+\hline
+\textbf{Supported network and transport protocols} & TCP & TCP and UDP & All IP-based & All IP-based \\
+\hline
+\textbf{Clearnet support} & High & Low & Medium & High \\
+\hline
+\textbf{Traffic analysis resistance} & Low & Medium & Low & High \\
+\hline
+\textbf{Sybil attack resistance} & Medium & Low & High & High \\
+\hline
+\textbf{Network management} & Directory Authorities & DHT & DHT/blockchain & Gateways, blockchain \\
+\hline
+\textbf{Topology} & Free route & Free route & Free route & Stratified \\
+\hline
+\textbf{Intermediate hops number (one way)} & 3 or 6 & 0--14 & 3--17 & 5 \\
+\hline
+\textbf{Hidden services support} & Yes & Yes & Yes & No \\
+\hline
+\textbf{Users number} & 2,000,000 daily & More than 55,000 daily & More than 1,000,000 monthly & No information \\
+\hline
+\textbf{Routers number} & 10,700 & 55,000 & 2,100 & 700 \\
+\hline
+\end{tabular}
+\end{table}
+
+The table \ref{tab:literature_comparison} summarises the comparison of currently functioning ACNs based on the literature.
+
+Tor was initially deployed in 2002, hence it is the oldest working ACN in this comparison. It is considered a direct successor to the original Onion Routing project, utilising the same anonymisation technique. It is fully free for the end users but relies on the volunteers for donating and running dedicated relays as well as on the financial support from various organisations. Tor supports only TCP-based applications, with a strong emphasis on web applications. Access to the clearnet is fully supported and it is one of the main goals of the network. Sadly, certain websites block traffic originating from the Tor network, most likely due to abuses. On the other hand, other websites, like Facebook or Reddit, have dedicated hidden services to distinguish traffic coming from within the Tor network. Tor is vulnerable to various traffic analysis attacks due to its low latency with the lack of timing analysis attack defenses or traffic volume obfuscation techniques. It does however protect against browser fingerprinting due to the dedicated Tor Browser. While in theory a Sybil attack could be easily performed in the Tor network, such an anomaly in the number of relays would be quickly spotted and blocked by the centralised Directory Authorities. Circuits in Tor follow free route topology. There are either three hops, for the clearnet traffic, or six hops, for the hidden services-related traffic. These lengths could be in theory changed in appropriate files but it is not easily accessible nor advised by the Tor developers. While the number of Tor users is hard to precisely measure, the estimations from the dedicated metrics subpage vary around 2 000 000 daily users, with a recent spike to 8 000 000 users, although the number came back to the usual 2 000 000 and the reason for such a spike was not publicly given. The routers’ number is roughly constant, adding up to around 10 700 relays with 8 800 publicly-listed ones and around 1 900 bridges.
+
+In theory, I2P can be considered an older network, dating back to 2001 with the Invisible IRC project. However, the major architectural change and move towards universal networking rather than an IRC-specific one was performed in 2003; therefore, it is considered as an inception year in this comparison. Utilising the I2P network is free, and each user acts as a router for other users, unless it is unsafe for him - meaning that he is connecting to the I2P network from a restricted country. The categorisation of restricted countries is performed according to the Freedom House research. I2P uses a slightly modified version of Onion Routing. Thanks to unidirectional tunnels instead of bidirectional ones, it is possible to bundle multiple messages within a single transport via a given tunnel. After leaving the sender’s outbound tunnel, the messages can then be distributed to appropriate recipients’ inbound tunnels. The modified version was named Garlic Routing. The vast majority of messages are sent separately and are not combined; however, in order to distinguish differences in this anonymisation technique, it is considered as a distinct one. Moreover, the concept of unidirectional tunnels makes I2P only a semi-circuit-switched network with elements of a packet-switched network, as an end-to-end message path is never established. The length of a tunnel is modifiable. By default, the unidirectional tunnels have 3 hops, and there are usually two or three tunnels for a given purpose. The length of any unidirectional tunnel can be set to any value from 0 to 7, with a possibility of probabilistic variations of the length to further distinguish traffic patterns. Even with a tunnel length of 0, the user still has the property of plausible deniability, as it is difficult to distinguish whether a certain traffic is designated for this user or is he just routing it for another user. In total, there can be as little as 0 hops to as much as 14 hops in one-way communication. I2P follows free route topology with remarks mentioned earlier. Multiple unidirectional tunnels with variable lengths and plausible deniability make the traffic analysis more difficult for an external observer, increasing the traffic analysis resistance of the network. It is not, however, fully resistant due to the same reasons as other Onion Routing-based low-latency ACNs. I2P supports both TCP and UDP traffic; however, each type of traffic requires a dedicated tunnel. Tunnels in the java-based I2P do not allow for a simple UDP-based tunnel; I2PD, a C++ implementation of the I2P router, provides such functionality. Java-based I2P allows only for a UDP-based Streamr tunnel. The I2P is mainly focused on the traffic within the network. In order for traffic to leave a network, an outproxy service needs to be established for a given application. For example, there is a built-in outproxy service for HTTP-based traffic provided by StormyCloud, allowing anonymous web browsing for I2P users. As each type of traffic needs a dedicated outproxy to leave a network and the outproxies are not always fully reliable, the clearnet support is considered as low. Due to its decentralisation, I2P is highly vulnerable to Sybil attacks, as there is almost no mechanism for controlling an unnaturally large number of nodes - a powerful attacker that would be able to launch tens of thousands of nodes would be able to take over the network. There is, however, a very basic anti-Sybil mechanism with checking IP closeness. Currently, there are around 55 000 routers within the I2P network and the number of users might be slightly larger, as users from restricted countries do not participate in routing messages. 
+
+Lokinet is a newer approach, existing since 2018 both when it comes to the code release and the whitepaper. In theory, the usage of Lokinet is free; however, the free exit nodes are usually non-functioning, which makes Lokinet unusable for clearnet usage. However, there is a possibility of purchasing access to private exit nodes or hosting custom ones, although it might be problematic from the anonymity point of view as it may link the user who wishes to remain anonymous directly to the exit node that he is using. Lokinet also utilises Onion Routing as an anonymisation technique, however on a lower layer than Tor and I2P do. While Tor supports TCP-based applications and I2P supports both TCP and UDP, Lokinet supports all IP-based protocols, including TCP and UDP but also, for example, ICMP. Hidden services hosted within Lokinet - SNApps, may therefore utilise a wide variety of traffic protocols. Lokinet utilises client-server architecture, free route topology and suffers from the exact same vulnerabilities in terms of traffic analysis as Tor. When it comes to the resistance of a Sybil attack it is more resistant than both Tor and I2P, despite the fact that it also uses decentralised DHT structure, in the form of blockchain, for the network management that in theory prones for the attack. The resistance is associated with a fact of cryptoeconomics - each time a new node is introduced to the network it needs to lock a fixed amount of tokens. With each new node the token pool shrinks, effectively increasing the price of the token and making the attack increasingly expensive with every new node. While the exact number of Lokinet users is difficult to estimate, the Session application, which is the most popular application utilising Lokinet infrastructure, has more than one million users a month - it can be therefore considered as the lower boundary for the number of users. Number of nodes varies around 2100.
+
+The youngest ACN in the comparison is the Nym network which had its first presentation in late 2019, the paper describing it was written two years later, in 2021. The NymVPN, a service that enabled the utilisation of the Nym Mix-net was officially launched in March 2025 and it is available as a paid service. Contrary to previous ACNs Nym is not Onion Routing-based - it utilises Mix-nets with client-server architecture. It is heavily based on another Mix-net design - Loopix and many technical solutions are derived from there, including stratified topology and traffic analysis resistance mechanisms like cover traffic and Poisson mixing. Nym has fixed-size 5-hop routing. Similarly to Lokinet, Nym provides economic incentives for node runners which not only encourages more people to run router nodes but also enhances Sybil attack resistance. Another similarity is using blockchain for the network management, which in Nym is also joined by gateways in order to charge users for the network usage. Nym provides a decent built-in clearnet support and does not support hidden services. There is no data regarding Nym’s number of users and the number of nodes is around 700.
+
+\section{Experiment-based comparison}
+
+\begin{table}[!ht]
+\caption{Experiment-based comparison of ACNs}
+\label{tab:experiment_comparison}
+\small
+\begin{tabular}{|p{0.2\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|}
+\hline
+\textbf{} & \textbf{Tor} & \textbf{I2P} & \textbf{Lokinet} & \textbf{Nym} \\
+\hline
+\textbf{RTT - clearnet [ms]} & 240 & Not measured & Not measured & 3152.92 \\
+\hline
+\textbf{Jitter - clearnet [ms]} & 20.05 & Not measured & Not measured & 1221.12 \\
+\hline
+\textbf{RTT - hidden services [ms]} & 393.94 & 813.27 & 352.13 & N/A \\
+\hline
+\textbf{Jitter - hidden services [ms]} & 43.97 & 54.25 & 26.6 & N/A \\
+\hline
+\textbf{Throughput - hidden services [Kbit/s]} & 2240 & 775 & 3504 & N/A \\
+\hline
+\textbf{Download speed - hidden services [Kbyte/s]} & 280 & 591 & 438 & N/A \\
+\hline
+\end{tabular}
+\end{table}
+
+Table \ref{tab:experiment_comparison} shows results of measurements of ACNs for both clearnet and hidden services traffic.
+Latency and jitter were measured by a simple Python client-server application, which was accessed through a specific ACN that was measured. In each trial, the measurement was repeated 50 times, and the result was the average across these repeats. Trials were repeated multiple times as well, as a specific measurement may have been taken during the periodic routing path change or suffered from temporary bottlenecks.
+Throughput initially was measured by iperf3, but as it turned out, it did not give correct results for ACNs and therefore it cannot be considered a suitable tool for measuring throughput in them - it showed a far too low value compared to a simple file download; therefore, the throughput was measured by the file download, which is more accurate, although not ideal. There is, however, a dedicated metric of file download speed which can be different from throughput in case ACN allows an alternative way of downloading files than simple client-server communication. There were also attempts to perform dedicated measurements for UDP; however, as Tor does not support UDP, measuring Nym alone makes no sense in terms of comparing ACNs. There was a similar issue with UDP for hidden services - Tor does not support UDP, and while I2P in theory does, there is no basic UDP tunnel in Java-based I2P; there is one in C++-based I2Pd, although there were difficulties in terms of compatibility with applications and packet loss, and the measurements were unstable - therefore the measurements were discouraged, leaving Lokinet the only ACN with full UDP support for hidden services.
+Measurements were performed for both clearnet and hidden services where there was such a possibility. As the Nym network does not support hidden services, it was only included in the clearnet measurements. Tor was included in both clearnet and hidden services. I2P requires a dedicated outproxy for each type of traffic. There were attempts to measure latency and jitter by a similar client-server web-based application using web sockets, but the I2P HTTP outproxy did not handle the websockets properly, while Tor and Nym did not have such issues. There were also attempts to measure it with external tools, but the results were unstable and varied significantly between each trial. Moreover, the outproxy suffered from significant downtimes. Considering all of these aspects, the clearnet measurements for I2P were abandoned as it is clearly not the right network for such traffic. While Lokinet in theory also supports browsing clearnet, the freely available exit nodes were not functioning in any of the attempts to perform measurements. There is a possibility of creating a private exit node or purchasing access to one; however, from the anonymity perspective, it is definitely not desired as the exit node can be directly correlated to an owner and/or vendor and potentially deanonymize the user. Certain Lokinet exit node vendors allow for cryptocurrency payments which may protect users as well as short-living exit nodes but it was not purchased for the sake of measurements due to large Bitcoin fees at the time of performing them and lack of possibility of paying not in crypto, which is understandable considering the risk. Despite cryptocurrency choice, the vendor required information about a purchaser which potentially may lead to a deanonymisation. Such inconveniences and potential threats are considered as not desired and therefore measurements for clearnet in Lokinet were not performed. 
+While Nym is also a paid service, one does not pay for the certain entry/exit node, only for the network access, with many layers of privacy protection as described in the Nym section, therefore the risk is considered significantly lower than Lokinet’s.
+Certain measurements are not present in the results table. For example, packet loss was checked with a simple ping command for Lokinet and Nym. The median value across the measurements was 0\%. The result is not present as the comparison is not fair - Lokinet was tested in terms of hidden services, while Nym in terms of clearnet.
+Another measurement that did not appear was Nym's throughput measurement for two reasons; firstly, there were issues with measuring it via the mechanism that was used for other ACNs and it was evaluated with online tests that were not performed for other ACNs. Secondly, placing this measurement in the hidden services table would not be accurate as it was performed for the clearnet connection; although, considering that connection to the inter-network service provider would involve the same number of hops, the measurements should vary significantly. The results in the tests showed very low throughput, around tens of Kbytes/s, which was expected due to the network architecture. 
+
+Results of the measurements were mostly expected based on the literature, although there were certain unexpected aspects.
+In terms of latency and jitter on clearnet Tor performed surprisingly well, achieving 240 ms of RTT, or 120 ms of latency and 20 ms of jitter. Nym was measured with 3152 ms of RTT, or 1576 ms of latency, and 1221 ms of jitter - significant values but they were expected due to the Mix-net architecture.
+With hidden services the lowest RTT and jitter were measured for Lokinet - 352 ms of RTT (176 ms of one-way latency) with 26.5 ms of jitter. Tor was not much slower - it had 394 ms of RTT (197 ms of one-way latency) and 44 ms of jitter. I2P turned out to be the slowest for hidden services in terms of RTT and jitter with 813 ms of RTT (406.5 ms of one-way latency) and 54 ms of jitter. In terms of throughput for hidden services, Lokinet also was measured with the highest value of 3504 Kbit/s, Tor with slightly lower value of 2240 Kbit/s, and I2P with the lowest value of 775 Kbit/s. In the matter of download speed, Tor and Lokinet were assigned with the same value as in throughput and converted to KByte/s, 280 KByte/s and 438 KByte/s respectively, as throughput was measured by a client-server file download and these networks do not have any techniques of optimising file downloading. There is however a significant difference in terms of file download for I2P - due to built-in I2P snark that supports BitTorrent protocol. The download speed is faster than in other ACNs, despite the fact of lower single-link throughput. The median value was 591 KByte/s with 21 peers. It shows the strength in terms of download speed of peer-to-peer file sharing protocols.
+
+
+\section{Comparative analysis in terms of use cases and application areas}
+
+Within this section ACNs will be evaluated in terms of using them in various use case groups. The scores will then be properly justified. ACNs will be, in general, evaluated with values from 1 to 10, with the possibility to rate 0 in case a certain trait is not present in the network at all. There is also a possibility of scores with halves. The scale is not linear.
+
+\subsection{Low-latency inter-network communication}
+
+\begin{table}[!ht]
+\caption{Comparison of ACNs in terms of low-latency inter-network communication use cases}
+\label{tab:low_latency_uc}
+\small
+\begin{tabular}{|p{0.2\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|}
+\hline
+\textbf{} & \textbf{Tor} & \textbf{I2P} & \textbf{Lokinet} & \textbf{Nym} \\
+\hline
+\textbf{Low latency (0.25)} & 7.5 & 4 & 8 & 1.5 \\
+\hline
+\textbf{Low jitter (0.25)} & 6 & 5 & 8 & 1.5 \\
+\hline
+\textbf{High throughput (0.2)} & 7 & 4 & 8 & 1.5 \\
+\hline
+\textbf{Both-end anonymity strength (0.15)} & 5 & 5 & 5 & 8 \\
+\hline
+\textbf{UDP support with low packet loss (0.15)} & 0 & 5 & 10 & 10 \\
+\hline
+\textbf{Weighted sum} & 5.525 & 4.55 & 7.85 & 3.75 \\
+\hline
+\end{tabular}
+\end{table}
+
+In the table \ref{tab:low_latency_uc} Tor, I2P, Lokinet, and Nym were evaluated in terms of using them in use cases requiring the lowest latency in inter-network communication. Lokinet scored 8 in terms of latency as it had the lowest value of RTT. Tor's RTT was not much lower, and therefore it scored 7.5. I2P's RTT was significant - therefore it was assigned a score of 4. However, the highest latency was with the Nym network, which was assigned 1.5. Half a point indicates that the latency could have been larger as Nym has relatively low latency compared to other Mix-nets.
+In terms of jitter, Lokinet once again achieved the highest score of 8. In fact, it was the only score that fits in the advised maximum 30 ms of jitter. Tor had a bit higher value of jitter, although higher than the desired 30 ms; therefore it scored 6 out of 10. Although I2P's latency was high, its jitter is relatively low in comparison; however, it was still higher than Tor's, so it was assigned a score of 4. The highest jitter was, of course, associated with the Nym network, which is a desirable property from the anonymity point of view but not necessarily in this use case scenario group.
+Throughput of Tor, I2P, and Lokinet was sufficient in terms of basic requirements within this group. Lokinet achieved the highest throughput and scored a value of 8, Tor had a slightly lower value and achieved 7 out of 10, I2P had drastically lower throughput than Tor and Lokinet, although still sufficient for basic requirements; therefore it was assigned a score of 4. Nym had the lowest throughput, which is directly associated with its architecture, and was assigned a score of 1.5.
+In terms of anonymity strength, Tor, I2P and Lokinet scored equal value of 5. While there are some differences between them, they all share onion routing architecture or its variations. On the one hand Tor can be considered as more anonymous as it has a larger anonymity set. On the other hand I2P has better plausible deniability as an observer is not able to distinguish whether a user received traffic for himself or just passed it through. Lokinet can provide anonymity on lower layers. As this paper does not aim to provide an anonymity measure for them, they will be assigned with the same weight as the biggest threat to all of these networks is traffic analysis to which they are all vulnerable. Nym is more resistant to traffic analysis, although it was rated with 8 out of 10 with one point subtracted due to the potentially low anonymity set or at least not publicly known and the second one subtracted due to the current lack of possibility of modifying parameters in a way that would allow more anonymity, as described in the Nym whitepaper.
+In terms of UDP support, only Lokinet and Nym provide full support, and for that reason, they scored 10 out of 10. I2P provides limited support, with the issues described earlier; as a consequence, it scored 5. Tor does not support UDP at all, and therefore was assigned a 0.
+The most suitable ACN for the low-latency use case group turned out to be Lokinet due to its consistently low latency and jitter, high throughput, and full support for UDP with low packet loss.
+
+\subsection{Highest anonymity latency-tolerant}
+
+\begin{table}[!ht]
+\caption{Comparison of ACNs in terms of highest anonymity latency-tolerant use cases}
+\label{tab:high_latency_uc}
+\small
+\begin{tabular}{|p{0.2\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|}
+\hline
+\textbf{} & \textbf{Tor} & \textbf{I2P} & \textbf{Lokinet} & \textbf{Nym} \\
+\hline
+\textbf{Sender anonymity strength (0.5)} & 5 & 5 & 5 & 8 \\
+\hline
+\textbf{Reliable delivery (0.25)} & 10 & 10 & 10 & 10 \\
+\hline
+\textbf{Message persistence (0.25)} & 0 & 0 & 10 & 10 \\
+\hline
+\textbf{Weighted sum} & 5 & 5 & 7.5 & 9 \\
+\hline
+\end{tabular}
+\end{table}
+
+Table \ref{tab:high_latency_uc} compares Tor, I2P, Lokinet, and Nym for scenarios where anonymity for the sender is the most important and latency is acceptable.
+Sender anonymity is the main factor here. Nym got the highest score (8) because its Mix-net design is better at hiding users from traffic analysis. Tor, I2P, and Lokinet have similar weaknesses due to their Onion Routing-based methods, so they all scored 5. More justification was provided within the previous category.
+Reliable delivery matters a lot when messages are critical. All the networks scored perfectly (10) because they reliably deliver messages.
+Message persistence, or keeping messages available until received, is important for asynchronous communication. Lokinet and Nym already include this feature, so they got 10. Tor and I2P don't have this built-in, needing extra setup; therefore, they got 0.
+The most suitable ACN for the highest anonymity latency-tolerant use case group turned out to be Nym due to its strong anonymity provided by its Mix-net architecture, reliable message delivery, and built-in message persistence. Nym’s design effectively mitigates traffic analysis threats, which are critical in sensitive communications.
+
+\subsection{Web browsing-based}
+
+\begin{table}[!ht]
+\caption{Comparison of ACNs in terms of web browsing-based use cases}
+\label{tab:web_browsing_uc}
+\small
+\begin{tabular}{|p{0.2\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|}
+\hline
+\textbf{} & \textbf{Tor} & \textbf{I2P} & \textbf{Lokinet} & \textbf{Nym} \\
+\hline
+\textbf{Clearnet support (0.25)} & 9 & 4 & 4 & 10 \\
+\hline
+\textbf{Censorship resistence (0.25)} & 9 & 5 & 1 & 1 \\
+\hline
+\textbf{Low latency (0.2)} & 8.5 & 4 & 8 & 1.5 \\
+\hline
+\textbf{Sender anonymity strength (0.2)} & 5 & 5 & 5 & 8 \\
+\hline
+\textbf{Web browsing optimisation (0.1)} & 10 & 3 & 6 & 6 \\
+\hline
+\textbf{Weighted sum} & 8.625 & 4.55 & 4.85 & 5.325 \\
+\hline
+\end{tabular}
+\end{table}
+
+Table \ref{tab:web_browsing_uc} compares Tor, I2P, Lokinet, and Nym for web browsing scenarios.
+
+Clearnet support is the most important aspect here. Nym scored highest (10) because it seamlessly supports browsing the regular internet. Tor is also good (9), with one point subtracted due to blocking  exit nodes as described in the chapter about threats. I2P and Lokinet are limited in accessing regular sites, so both scored lower (4); their issues with clearnet support were described.
+Censorship resistance is important for unrestricted browsing. Tor excels at this (9) because it has many methods to get around censorship, including bridges and pluggable transports. I2P provides moderate resistance (5) as it is more difficult to ban constantly changing peers in the peer-to-peer design compared to long-running servers in client-server design. Lokinet and Nym don't have strong anti-censorship capabilities, although both acknowledged the need for such a mechanism; therefore both scored 1.
+Low latency is crucial for comfortable browsing. Tor did very well (8.5), the score was based on both the latency in clearnet and for hidden services. Second one was Lokinet (8). I2P's latency was noticeably higher, scoring 4, and Nym’s latency was very high, earning just 1.5.
+Sender anonymity is important for privacy. Nym has stronger anonymity (8) due to its Mix-net architecture. Tor, I2P, and Lokinet have moderate anonymity (5) because of their onion routing methods as described earlier.
+Web browsing optimization, like easy setup and fingerprint protection, strongly favours Tor (10). Lokinet and Nym have some optimizations, mostly in terms of ease of setup (6), while I2P lacks significant optimisations and with difficulties for setting up clearnet support, scoring 3.
+The most suitable ACN for web browsing-based use cases turned out to be Tor, due to its excellent balance of clearnet support, censorship resistance, low latency, great latency/anonymity trade-off and robust optimisations tailored specifically for web browsing. 
+
+\subsection{File sharing-based}
+
+\begin{table}[!ht]
+\caption{Comparison of ACNs in terms of file sharing-based use cases}
+\label{tab:file_sharing_uc}
+\small
+\begin{tabular}{|p{0.2\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|}
+\hline
+\textbf{} & \textbf{Tor} & \textbf{I2P} & \textbf{Lokinet} \\
+\hline
+\textbf{Download speed (0.3)} & 6 & 8 & 7 \\
+\hline
+\textbf{Both-end anonymity strength (0.3)} & 5 & 5 & 5 \\
+\hline
+\textbf{Volume correlation resistance (0.3)} & 3 & 6 & 1 \\
+\hline
+\textbf{File sharing protocols support (0.1)} & 0 & 10 & 0 \\
+\hline
+\textbf{Weighted sum} & 4.2 & 6.7 & 3.9 \\
+\hline
+\end{tabular}
+\end{table}
+
+Table \ref{tab:file_sharing_uc} evaluates Tor, I2P, and Lokinet for file-sharing purposes. Nym is not evaluated as it does not provide mutual anonymity for the server and receiver; in other words, hidden services are required for this use case group.
+Download speed matters greatly here. I2P got the best score (8), Lokinet scored decently (7), while Tor, less suited for large file transfers, got 6.
+Both-end anonymity, or anonymity for senders and receivers, is similar across Tor, I2P, and Lokinet. All scored equally (5) because of vulnerabilities to traffic analysis.
+Volume correlation resistance, important in large transfers, is best in I2P (6) due to garlic routing capabilities, many tunnels, plausible deniability, and significant possibilities in terms of changing tunnels' properties, obfuscating the volume pattern. Moreover, utilising peer-to-peer file sharing protocols can further help to obscure traffic patterns as smaller chunks are sent through the network from various sources. Tor has moderate protection (3) like fixed-size cells, and Lokinet lacks effective protection, scoring lowest (1).
+Support for file-sharing protocols clearly favors I2P (10) because of its support, for example, for BitTorrent with various clients (not only built-in I2PSnark), but also supports less used protocols like Kad network clients or Gnutella clients. Tor and Lokinet don't have built-in support, and Tor even discourages using BitTorrent over Tor as it is not anonymous; both therefore scored 0.
+The most suitable ACN for file-sharing-based use cases turned out to be I2P, due to its high download speeds, mostly enabled by peer-to-peer protocols, strong volume correlation resistance through garlic routing and other architectural characteristics, and built-in support for common file-sharing protocols.
+
+\subsection{Infrastructure security and resilience-based}
+
+\begin{table}[!ht]
+\caption{Comparison of ACNs in terms of infrastructure security and resilience-based use cases}
+\label{tab:security_resilience_uc}
+\small
+\begin{tabular}{|p{0.2\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|p{0.16\textwidth}|}
+\hline
+\textbf{} & \textbf{Tor} & \textbf{I2P} & \textbf{Lokinet} \\
+\hline
+\textbf{Resilience to active attacks (0.3)} & 8 & 6 & 7 \\
+\hline
+\textbf{Authentication and authorisation mechanisms (0.3)} & 10 & 7 & 0 \\
+\hline
+\textbf{Server anonymity strength (0.2)} & 5 & 5 & 5 \\
+\hline
+\textbf{Academic research and maturity (0.2)} & 9 & 6 & 2 \\
+\hline
+\textbf{Weighted sum} & 8.2 & 6.1 & 3.5 \\
+\hline
+\end{tabular}
+\end{table}
+
+Table \ref{tab:security_resilience_uc} compares Tor, I2P and Lokinet for infrastructure protection and resilience. Nym is not evaluated as it does not provide a possibility of server anonymity, which is needed for this use case group.
+
+Resilience to active attacks, like denial-of-service, is strongest in Tor (8), benefiting from its central management and history. Lokinet, due to blockchain-based incentives, has decent resilience especially for Sybil attacks; therefore, it scored 7, and I2P, with its decentralized design, scored slightly lower - 6. While I2P is slightly more resilient to DDoS attacks, it is vastly more prone to Sybil attacks as described in previous chapters.
+Authentication and authorization mechanisms are strongest in Tor (10) because of its established security options. I2P has reasonable mechanisms of encrypted lease sets (7). Lokinet currently doesn't have integrated security features, scoring 0.
+Server anonymity strength is similar across all networks, scoring moderately (5) due to shared vulnerabilities from onion routing.
+Academic research and maturity strongly benefit Tor (9) since it is extensively studied and tested. I2P has moderate research backing and maturity, scoring 6. Lokinet, being new with less research, got the lowest score (2).
+The most suitable ACN for infrastructure security and resilience-based use cases turned out to be Tor, due to its resilience to active attacks, robust authentication and authorisation mechanisms, and extensive academic research and maturity.
