@@ -19,7 +19,7 @@ The first idea for a strong anonymous network came from David Chaum, who describ
 The four main ACNs used today are:
 \begin{enumerate}
     \item \textbf{Tor}: it is the most popular ACN. It uses onion routing and thousands of volunteer relays. Tor is good for anonymous web browsing and running hidden websites that can optionally be protected with authorisation mechanisms. Tor is a perfect ACN for accessing normal websites (clearnet) but can be slow or blocked in some countries - that is why they introduced censorship circumvention mechanisms in terms of non-public relays or pluggable transports that can optionally obfuscate the traffic, making it more difficult to classify and block.
-    \item \textbf{I2P}: it is a fully peer-to-peer network using garlic routing, which is a variation of the onion routing. I2P utilises unidirectional tunnels instead of the bidirectional circuits, and users have a lot of freedom in terms of customising tunnels' parameters: they can change the number of inbound/outbound tunnels for specific purposes, make them longer or shorter or even choose variation of tunnel length. All of these aspects makes traffic analysis more difficult as the users have the plausible deniability - it is hard to tell whether a certain user was receving message for himself or was he just passing it through. I2P is good for internal hidden services and especially good for anonymous file sharing due to peer-to-peer file sharing protocols support and volume obfuscation techniques described earlier, but it is not the best tool for accessing the clearnet.
+    \item \textbf{I2P}: it is a fully peer-to-peer network using garlic routing, which is a variation of the onion routing. I2P utilises unidirectional tunnels instead of the bidirectional circuits, and users have a lot of freedom in terms of customising tunnels' parameters: they can change the number of inbound/outbound tunnels for specific purposes, make them longer or shorter or even choose variation of tunnel length. All of these aspects makes traffic analysis more difficult as the users have the plausible deniability - it is hard to tell whether a certain user was receving message for himself or was he just passing it through. I2P is good for internal hidden services and especially good for anonymous file sharing due to peer-to-peer file sharing protocols support and volume obfuscation techniques described earlier, but it is not the best tool for accessing the clearnet; although there are outproxy services for HTTP and HTTPS, however they are not always reachable.
     \item \textbf{Lokinet}: it works at the network layer and acts like an anonymous VPN for any program, not just browsers. It can in theory work with clearnet, the free exit nodes are often non-functioning but there is a possibility of renting dedicated exit nodes from private sellers or setting up custom exit nodes. The main advantage due to the lower-layer design is smaller latency and jitter.
     \item \textbf{Nym}: It is a new project based on previously mentioned Loopix. It is made to be resistant to powerful attackers and is best for people who need strong anonymity even if the network is slower. It is accessible as a mode in the NymVPN service, making this network the only officially paid network in this list.
 \end{enumerate}
@@ -36,16 +36,262 @@ Students will measure download speed for a big file shared over Tor via OnionSha
 \end{enumerate}
 
 \section{Laboratory setup}
-Laboratory should be performed on a Debian-based Linux distribution, ideally on Debian 12/Bookworm. Each workstation should have Python, Docker, Firefox, any non-Firefox browser (i.e. DuckDuckGo browser, Opera or Brave), OnionShare, I2P router and Lokinet with GUI installed. I2P router and Lokinet should be turned on in order to establish necessary tunnels and paths in advance. I2P's bandwidth parameters should be changed in both router client and I2PSnark client in order to avoid throttling.
+Laboratory should be performed on a Debian-based Linux distribution, ideally on Debian 12/Bookworm. Each workstation should have Python, Docker, Firefox, any non-Firefox browser (i.e. DuckDuckGo browser, Opera or Brave), OnionShare, I2P router, and Lokinet with GUI installed. I2P router and Lokinet should be turned on in order to establish necessary tunnels and paths in advance. I2P's bandwidth parameters should be changed in both router client and I2PSnark client in order to avoid throttling.
 
 \section{Practical exercises}
 
 \subsection{Anonymity by policy and anonymity by design}
+\textbf{Learning outcomes}: After finishing this exercise, a student should be able to tell a difference between those approaches, along with the drawbacks and potential threats of anonymity by policy design.
+\begin{enumerate}
+    \item Clone the repository from https://github.com/Karakean/Master-Thesis
+    The files related to the educational demonstrator will be within the laboratory/ directory. It will be the working directory for exercise 1 and 2.
+    \item Run routers as Docker containers:
+    \begin{lstlisting}[language=bash]
+    docker compose up --build
+    \end{lstlisting}
+    \item Wait for the routers to start and then run client:
+    \begin{lstlisting}[language=bash]
+    python3 client.py
+    \end{lstlisting}
+    \item Select “single hop proxy” mode and send "Hello" message.
+    \item Enter the single hop proxy:
+    \begin{lstlisting}[language=bash]
+    docker exec -it single-hop-proxy /bin/bash
+    \end{lstlisting}
+    \item Read the output.log file.
+    \item \textbf{Question}: What do you see? Do you see any issues with this design? Do you know any services that use this design?
+    \item Exit the client, re-run it with “anonymous communication network” mode and send the same message as before.
+    \item Enter the entry node and read the output.log file similarly to how you did it with a single hop proxy.
+    \item Repeat for the middle node and the exit node.
+    \item \textbf{Question}: What is the difference compared to the single hop proxy? What has improved and what can be worse? Why is the single hop proxy approach known as anonymity by policy and ACN-based approach as anonymity by design?
+\end{enumerate}
 
 \subsection{Mix-nets and onion routing}
+\textbf{Learning outcomes}: After finishing this exercise a student should be able to tell a difference between ACNs based on Mix-nets and Onion Routing, along with advantages and disadvantages of each design. A student should also be able to name a few use cases for each design.
+\begin{enumerate}
+    \item Run routers analogically to the previous exercise.
+    \item Select “anonymous communication network” mode and send 10 messages with numbers from 1 to 10.
+    \item Enter each node and read output files.
+    \item \textbf{Question}: Consider an attacker who is watching a destination which receives messages from an exit node along with all users that are sending messages to the anonymous communication network. Do you see any issues with current design with regards to such an attacker?
+    \item Change ROUTER\_MODE from “onion-routing” to “mix-net” in the .env file.
+    \item Re-run the docker containers.
+    \item Once again select “anonymous communication network” mode and send 5 messages with numbers from 1 to 5.
+    \item Enter each node and read output files.
+    \item \textbf{Question}: What do you see? Justify such a state.
+    \item Send further 5 messages from 5 to 10.
+    \item Enter each node and read output files.
+    \item \textbf{Question}: What do you see? Justify such a state.
+    \item \textbf{Question}: What are the main differences between the Mix-nets and Onion Routing? Which design will be more suitable in case of asynchronous communication or whistleblowing and which will be more suitable in latency-vulnerable use cases such as web browsing or instant messaging?
+\end{enumerate}
 
 \subsection{Browsing clearnet with ACNs}
+\textbf{Learning outcomes}: After finishing this exercise a student should be able to configure ACNs for browsing clearnet. A student should be able to point out a preferable ACN for this application area.
+\begin{enumerate}
+    \item Download and install Tor Browser https://www.torproject.org/download/
+    \item Turn on Tor Browser and enter https://example.com/
+    \item \textbf{Question}: Relays from which countries are used within your circuit that is used for this website? Were the actions necessary to visit the website complex and/or difficult?
+    \item Open Firefox browser.
+    \item Open the \textit{application menu} and go to \textit{settings}.
+    \item Scroll down to the \textit{Network Settings} and open them.
+    \item In the \textit{Configure Proxy Access to the Internet} section choose radio button \textit{Manual proxy configuration }
+    \item In the \textit{HTTP Proxy} textbox write 127.0.0.1 with port 4444.
+    \item Click the checkbox \textit{Also use this proxy for HTTPS}.
+    \item In the section \textit{No proxy for} write localhost, 127.0.0.1
+    \item Save the changes.
+    \item Go to the address \textit{about:config}.
+    \item Ensure that \textit{media.peerConnection.ice.proxy\_only} property is set to \textit{true}.
+    \item Change property \textit{keyword.enabled} to \textit{false}.
+    \item Restart Firefox browser.
+    \item Try to reach https://example.com/ from the Firefox browser. Try to refresh it a few times.
+    \item \textbf{Question}: Is it reachable? If not - what may be the reasons behind it? Were the actions necessary to visit the website complex and/or difficult?
+    \item Open the Lokinet GUI and make sure the state is \textit{Connected to Lokinet}. If not, click the power button.
+    \item In order to make sure that the connection to Lokinet is established run:
+    \begin{lstlisting}[language=bash]
+    ping directory.loki
+    \end{lstlisting}
+    If it works, it means that the Lokinet works properly.
+    \item \textbf{Question}: Can ping work over Tor or I2P?
+    \item From the GUI turn on the VPN mode.
+    \item \textbf{Question}: Were the actions necessary to turn on the VPN mode complex and/or difficult? Does it work? If not - what may be the reasons behind it? What might help?
+    \item \textbf{Question}: Based on this exercise - which ACN do you find the most suitable for clearnet web browsing?
+\end{enumerate}
+
 
 \subsection{Hidden services}
+\textbf{Learning outcomes}: After finishing this exercise a student should be able to configure Hidden Services within the Tor network. A student should be able to name their advantages and potential use cases.
+
+\subsubsection{Initial Tor setup}
+In order to create Hidden Services you first need to install necessary packages.
+\begin{enumerate}
+    \item First update packages. Run:
+    \begin{lstlisting}[language=bash]
+    apt update
+    \end{lstlisting}
+    \item Install necessary packages:
+    \begin{lstlisting}[language=bash]
+    apt install -y apt-transport-https gnupg
+    \end{lstlisting}
+    \item Get current debian release. Run:
+    \begin{lstlisting}[language=bash]
+    lsb_release -c | awk '{print $2}'
+    \end{lstlisting}
+    \item Create apt sources list for Tor:
+    \begin{lstlisting}[language=bash, breaklines=true, breakatwhitespace=true, columns=flexible]
+    tee /etc/apt/sources.list.d/tor.list > /dev/null <<EOF
+       deb     [signed-by=/usr/share/keyrings/deb.torproject.org-keyring.gpg] https://deb.torproject.org/torproject.org <DISTRIBUTION> main
+       deb-src [signed-by=/usr/share/keyrings/deb.torproject.org-keyring.gpg] https://deb.torproject.org/torproject.org <DISTRIBUTION> main
+    EOF
+    \end{lstlisting}
+    Where <DISTRIBUTION> should be replaced with the previous step’s output.
+    \item Verify Tor packages:
+    {\footnotesize
+    \begin{lstlisting}[language=bash, breaklines=true, columns=flexible]
+    wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor | tee /usr/share/keyrings/deb.torproject.org-keyring.gpg >/dev/null
+    \end{lstlisting}
+    }
+    \item Now install Tor packages:
+    \begin{lstlisting}[language=bash]
+    apt update && apt install tor deb.torproject.org-keyring
+    \end{lstlisting}
+\end{enumerate}
+
+\subsubsection{HTTP}
+\begin{enumerate}
+    \item Create a directory with a student ID number as a name. Create index.html with visible ID inside the web page body.
+    \item Run python-based web server:
+    \begin{lstlisting}[language=bash]
+    python3 -m http.server 80 &
+    \end{lstlisting}
+    \item Create necessary directory for the Hidden Service:
+    \begin{lstlisting}[language=bash]
+    mkdir /var/lib/tor/laboratory_onion_service_website
+    \end{lstlisting}
+    \item Set proper permissions and ownership of the tor directory:
+    \begin{lstlisting}[language=bash]
+    chown -R debian-tor /var/lib/tor/
+    chmod 700 -R /var/lib/tor
+    \end{lstlisting}
+    \item Modify Tor configuration under /etc/tor/torrc. Add these two lines:
+    \begin{lstlisting}[language=bash]
+    HiddenServiceDir /var/lib/tor/laboratory_onion_service_website/
+    HiddenServicePort 80 127.0.0.1:80
+    \end{lstlisting}
+    The first line specifies the directory where the Hidden Service configuration will be stored. The second line maps a hidden service port to a local port on the localhost interface.
+    \item In order for the changes to apply, Tor needs to be restarted:
+    \begin{lstlisting}[language=bash]
+    systemctl restart tor
+    \end{lstlisting}
+    \item If everything went successfully then onion address should be visible after running this command:
+    \begin{lstlisting}[language=bash]
+    cat /var/lib/tor/laboratory_onion_service_website/hostname
+    \end{lstlisting}
+    \item If something went wrong and the hostname file does not exist, you can find logs with below command:
+    \begin{lstlisting}[language=bash]
+    journalctl -e -u tor@default
+    \end{lstlisting}
+    \item Reach onion address via Tor Browser. Due to the NAT/hole punching it is not necessary to open ports on a firewall.
+    \item \textbf{Question}: What properties do Hidden Services have? What use cases for them can you name?
+\end{enumerate}
+
+\subsubsection{HTTP with authorisation key}
+In this section you will add additional authorization for the web service.
+\begin{enumerate}
+    \item Install necessary packages:
+    \begin{lstlisting}[language=bash]
+    apt update && apt install -y openssl basez
+    \end{lstlisting}
+    \item Generate private key:
+    \begin{lstlisting}[language=bash, breaklines=true, breakatwhitespace=true]
+    openssl genpkey -algorithm x25519 -out /tmp/website_key.prv.pem
+    cat /tmp/website_key.prv.pem | grep -v " PRIVATE KEY" | base64pem -d | tail --bytes=32 | base32 | sed 's/=//g' > /tmp/website_key.prv.key
+    \end{lstlisting}
+    \item Extract public key from the private key:
+    \begin{lstlisting}[language=bash, breaklines=true, breakatwhitespace=true]
+    openssl pkey -in /tmp/website_key.prv.pem -pubout | grep -v " PUBLIC KEY" | base64pem -d | tail --bytes=32 | base32 | sed 's/=//g' > /tmp/website_key.pub.key
+    \end{lstlisting}
+    \item Create a directory for authorized clients:
+    \begin{lstlisting}[language=bash, breaklines=true, breakatwhitespace=true, columns=flexible]
+    mkdir  /var/lib/tor/laboratory_onion_service_website/authorized_clients/
+    \end{lstlisting}
+    \item Within the newly created directory create <ID>.auth file, where <ID> should be replaced with your student ID number. Edit this file adding this one line:
+    \begin{lstlisting}[language=bash]
+    descriptor:x25519:<base32-encoded-public-key>
+    \end{lstlisting}
+    Where <base32-encoded-public-key> is the public key that was created earlier.
+    \item Once again, set proper permissions and ownership for newly created files:
+    \begin{lstlisting}[language=bash]
+    chown -R debian-tor /var/lib/tor/
+    chmod 700 -R /var/lib/tor/
+    \end{lstlisting}
+    \item Restart Tor service:
+    \begin{lstlisting}[language=bash]
+    systemctl restart tor
+    \end{lstlisting}
+    \item Now try to refresh the Tor Browser. You should be prompted for a key - enter the private key that you created before.
+    \item There is an alternative way of reaching a Tor Hidden Service. It allows you to omit entering a private key via checkbox. First you need to create an appropriate directory for storing authorisation credentials:
+    \begin{lstlisting}[language=bash]
+    mkdir -p /var/lib/tor/onion_auth
+    \end{lstlisting}
+    \item Then you need to edit configuration file at /etc/tor/torrc and add following line:
+    \begin{lstlisting}[language=bash]
+    ClientOnionAuthDir /var/lib/tor/onion_auth
+    \end{lstlisting}
+    Keep in mind that configurations should be separated with an empty line - therefore make an empty line under the hidden service lines you have created before and then paste the ClientOnionAuthDir line.
+    \item Within the newly created authorisation directory create a file named \textit{<ID>\_website.auth\_private}, where <ID> is your student ID number.
+    \item Edit this file and add a following line, replacing marked sections with proper values:
+    \begin{lstlisting}[language=bash, breaklines=true, breakatwhitespace=true]
+    <56-char-onion-addr-without-.onion-part>:descriptor:x25519:<x25519 private key in base32>
+    \end{lstlisting}
+    \item Set proper ownership and permissions:
+    \begin{lstlisting}[language=bash]
+    chown -R debian-tor /var/lib/tor/
+    chmod 700 -R /var/lib/tor/  
+    \end{lstlisting}
+    \item Restart Tor in order to apply changes:
+    \begin{lstlisting}[language=bash]
+    sudo systemctl restart tor 
+    \end{lstlisting}
+    \item Reach the website via torsocks and curl:
+    \begin{lstlisting}[language=bash]
+    torsocks curl http://<your_onion_address.onion>
+    \end{lstlisting}
+    \item \textbf{Question}: What use cases do you see for Hidden Services protected with authorisation keys?
+\end{enumerate}
+
+\subsubsection{SSH}
+Last stage of this exercise should be done in pairs. One student from the pair will host a Hidden SSH Service and the second one will be a client connecting to it. Steps from 1 to 4 should be performed by the student that will host the Hidden Service.
+
+\begin{enumerate}
+    \item Install SSH server:
+    \begin{lstlisting}[language=bash]
+    apt update && apt install -y openssh-server
+    \end{lstlisting}
+    \item Start SSH server:
+    \begin{lstlisting}[language=bash]
+    systemctl start ssh
+    \end{lstlisting}
+    \item Now edit configuration file under /etc/tor/torrc, adding below lines:
+    \begin{lstlisting}[language=bash]
+    HiddenServiceDir /var/lib/tor/laboratory_onion_service_ssh/
+    HiddenServicePort 22 127.0.0.1:22
+    \end{lstlisting}
+    Remember about leaving an empty line between existing configurations.
+    \item Perform analogical steps for protecting a Hidden Service with authorisation as you did in the previous stage (steps 2-7).
+    \item The student that will connect to the SSH service needs to perform steps 9-14 analogically as in the previous stage.
+    \item Client should connect to the SSH server by running the command below:
+    \begin{lstlisting}[language=bash]
+    torsocks ssh <USER>@<ONION_ADDRESS.onion>
+    \end{lstlisting}
+    Where <USER> can be replaced either with root or other existing user. If you choose a root user, remember to check on the server side if the /etc/ssh/sshd\_config file contains the line PermitRootLogin with the value set to \textit{yes}.
+    \item \textbf{Question}: What are the benefits of using SSH over Tor?
+\end{enumerate}
 
 \subsection{File sharing with ACNs}
+\textbf{Learning outcomes}: After finishing this exercise, a student should be able to point out differences between Tor and I2P in terms of file sharing. A student should point out a preferable ACN for this use case.
+\begin{enumerate}
+    \item Lab instructor will provide a link to OnionShare with a file of size 500MB. Measure elapsed time for downloading this file.
+    \item Knowing the file size and elapsed time, calculate the download speed for the Tor network.
+    \item Lab instructor will provide a magnet link for I2P snark for the same file. Measure elapsed time for downloading this file. Do not remove the file or turn off the I2P once downloaded - make sure the torrent stays as \textit{seeding}.
+    \item Calculate the download speed for the I2P network.
+    \item \textbf{Question}: Which network was faster? Why? Which network provides a better obfuscation when downloading large files and why?
+\end{enumerate}
