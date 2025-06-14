@@ -1,50 +1,52 @@
 \chapter{Educational demonstrator}
+This chapter presents an educational demonstrator designed to help students understand how anonymous communication networks work in practice and to illustrate the effects of the analysis performed in this work. The demonstrator combines theoretical background with practical exercises to highlight key differences between various anonymity solutions.
+A key goal of the demonstrator is to show that there is no single universal ACN suitable for all use cases. Instead, the choice of the network should be guided by the specific requirements of a given scenario. Through hands-on tasks such as clearnet browsing, hidden service setup, and anonymous file sharing, students will gain insight into which networks are better suited for particular applications and why.
 
 \section{Scope of the laboratory}
 This laboratory is designed to help students understand how anonymous communication networks (ACNs) work in practice, what their main features are, and where they can be used. The lab covers both the theory and practical exercises to show differences between various anonymity solutions, starting from basic proxies and moving to more advanced systems. Students will learn about:
 \begin{itemize}
-    \item The difference between anonymity by policy and anonymity by design, and why this matters.
-    \item The basics of Mix-nets and onion routing, and how they affect anonymity.
-    \item The most popular ACNs today: Tor, I2P, Lokinet, and Nym—how they work, what they are good at, and what problems they are facing.
+    \item The difference between anonymity by policy and anonymity by design and why this matters.
+    \item The basics of Mix-nets and onion routing and how they affect anonymity.
+    \item The most popular ACNs today: Tor, I2P, Lokinet, and Nym: How do they work, what they are good at, and what problems they face.
     \item The real use cases for each of these systems, including web browsing, hidden services, and file sharing.
 \end{itemize}
 
 \section{Theoretical introduction}
-Anonymous communication networks are systems built to hide who is talking to whom. Firstly deployed were simple solutions like proxies or remailers, where you had to trust the operator not to reveal your identity. This is called \textbf{anonymity by policy}—you are only anonymous if the operator sticks to the rules. History shows this is not enough, as providers sometimes keep logs or are forced to give up user data. These solutions, therefore, cannot be treated as truly anonymous communication networks.
+Anonymous communication networks are systems built to hide who is talking to whom. Firstly, deployed were simple solutions like proxies or remailers, where you had to trust the operator not to reveal your identity. This is called \textbf{anonymity by policy}—you are only anonymous if the operator adheres to the rules. History shows that this is not enough, as providers sometimes keep logs or are forced to give up user data. Therefore, these solutions cannot be treated as truly anonymous communication networks.
 
-\textbf{Anonymity by design} is a different approach: the network is built so that not even the operator can find out who the users are. This is achieved due to cryptography, usually joined by layered encryption, and careful design. This is the basis for modern ACNs.
+\textbf{Anonymity by design} is a different approach: the network is built so that no one can even find who the users are. This is achieved due to cryptography, usually joined by layered encryption, and careful design. This is the basis for modern ACNs.
 
 The first idea for a strong anonymous network came from David Chaum, who described Mix-nets in the 1980s. A Mix-net network consists of mixes - dedicated servers that receive messages, batch, shuffle (mix), and encrypt them, so that it is hard to link the sender to the receiver. Their main drawback is that they are slow and not good for latency-vulnerable use cases like web browsing. Later, onion routing was invented for lower latency, thanks to its circuit-switched nature - sending data through an established bidirectional circuit, making it possible to browse the web comfortably while staying anonymous; however, this introduced a significant drawback in terms of traffic analysis vulnerability. Nonetheless, onion routing turned out to be a dominant strategy and is widely used today. Mix-nets seem to have been forgotten for some time; however, recently they are appearing more often in the literature, mostly thanks to the Loopix design that allows using Mix-net architecture with relatively low latency, although still higher than the one introduced by the onion routing-based solutions.
 
-The four main ACNs used today are:
+The four main ACNs used today are the following:
 \begin{enumerate}
-    \item \textbf{Tor}: it is the most popular ACN. It uses onion routing and thousands of volunteer relays. Tor is good for anonymous web browsing and running hidden websites that can optionally be protected with authorisation mechanisms. Tor is a perfect ACN for accessing normal websites (clearnet) but can be slow or blocked in some countries - that is why they introduced censorship circumvention mechanisms in terms of non-public relays or pluggable transports that can optionally obfuscate the traffic, making it more difficult to classify and block.
-    \item \textbf{I2P}: it is a fully peer-to-peer network using garlic routing, which is a variation of the onion routing. I2P utilises unidirectional tunnels instead of the bidirectional circuits, and users have a lot of freedom in terms of customising tunnels' parameters: they can change the number of inbound/outbound tunnels for specific purposes, make them longer or shorter or even choose variation of tunnel length. All of these aspects makes traffic analysis more difficult as the users have the plausible deniability - it is hard to tell whether a certain user was receving message for himself or was he just passing it through. I2P is good for internal hidden services and especially good for anonymous file sharing due to peer-to-peer file sharing protocols support and volume obfuscation techniques described earlier, but it is not the best tool for accessing the clearnet; although there are outproxy services for HTTP and HTTPS, however they are not always reachable.
-    \item \textbf{Lokinet}: it works at the network layer and acts like an anonymous VPN for any program, not just browsers. It can in theory work with clearnet, the free exit nodes are often non-functioning but there is a possibility of renting dedicated exit nodes from private sellers or setting up custom exit nodes. The main advantage due to the lower-layer design is smaller latency and jitter.
-    \item \textbf{Nym}: It is a new project based on previously mentioned Loopix. It is made to be resistant to powerful attackers and is best for people who need strong anonymity even if the network is slower. It is accessible as a mode in the NymVPN service, making this network the only officially paid network in this list.
+    \item \textbf{Tor}: it is the most popular ACN. It uses onion routing and thousands of volunteer relays. Tor is good for anonymous web browsing and running hidden websites that can optionally be protected with authorisation mechanisms. Tor is a perfect ACN for accessing normal websites (clearnet), but can be slow or blocked in some countries - that is why they introduced censorship circumvention mechanisms in terms of non-public relays or pluggable transports that can optionally obfuscate the traffic, making it more difficult to classify and block.
+    \item \textbf{I2P}: it is a fully peer-to-peer network using garlic routing, which is a variation of onion routing. I2P utilises unidirectional tunnels instead of the bidirectional circuits, and users have a lot of freedom in terms of customising tunnels' parameters: they can change the number of inbound/outbound tunnels for specific purposes, make them longer or shorter, or even choose variation of tunnel length. All of these aspects make traffic analysis more difficult as the users have the plausible deniability - it is hard to tell whether a certain user was receiving message for himself or was he just passing it through. I2P is good for internal hidden services and especially good for anonymous file sharing due to peer-to-peer file sharing protocols support and volume obfuscation techniques described earlier, but it is not the best tool for accessing the clearnet; although there are outproxy services for HTTP and HTTPS, however, they are not always reachable.
+    \item \textbf{Lokinet}: it works at the network layer and acts like an anonymous VPN for any program, not just browsers. It can in theory work with clearnet, the free exit nodes are often non-functioning but there is a possibility of renting dedicated exit nodes from private sellers or setting up custom exit nodes. The main advantage of the lower layer design is the smaller latency and jitter.
+    \item \textbf{Nym}: It is a new project based on the previously mentioned Loopix. It is made to be resistant to powerful attackers and is best for people who need strong anonymity even if the network is slower. It is accessible as a mode in the NymVPN service, making this network the only officially paid network in this list.
 \end{enumerate}
 
 \section{Course of the laboratory}
 During the lab, students will go through five main practical exercises:
 \begin{enumerate}
     \item \textbf{Anonymity by policy vs. anonymity by design}: Students will see how single-hop proxies work, check the logs, and notice the weaknesses. Then, they will switch to an ACN setup and compare the difference.
-\item \textbf{Mix-nets and Onion Routing}: Students will send messages using both methods and look at the results. They will see how Mix-nets provide better protection against traffic analysis but with the cost of a larger delay.
-\item \textbf{Browsing clearnet with ACNs}: Students will try to reach regular websites over ACNs, comparing support of the clearnet for each ACN.
-\item \textbf{Hidden Services}: Students will set up a Tor hidden service, first without, then with authorisation keys. They’ll see how this allows access to web pages and SSH services securely.
+\item \textbf{Mix-nets and Onion Routing}: Students will send messages using both methods and look at the results. They will see how Mix-nets provide better protection against traffic analysis, but with the cost of a larger delay.
+\item \textbf{Browsing clearnet with ACNs}: Students will try to reach regular websites using ACNs, comparing the support of the clearnet for each ACN.
+\item \textbf{Hidden Services}: Students will set up a Tor hidden service, first without and then with authorisation keys. They’ll see how this allows access to web pages and SSH services securely.
 \item File sharing with ACNs
 Students will measure download speed for a big file shared over Tor via OnionShare and I2P via I2PSnark. They will compare which is faster and which hides traffic patterns better.
 \end{enumerate}
 
 \section{Laboratory setup}
-Laboratory should be performed on a Debian-based Linux distribution, ideally on Debian 12/Bookworm. Each workstation should have Python, Docker, Firefox, any non-Firefox browser (i.e. DuckDuckGo browser, Opera or Brave), OnionShare, I2P router, and Lokinet with GUI installed. I2P router and Lokinet should be turned on in order to establish necessary tunnels and paths in advance. I2P's bandwidth parameters should be changed in both router client and I2PSnark client in order to avoid throttling.
+Laboratory should be performed on a Debian-based Linux distribution, ideally on Debian 12/Bookworm. Each workstation should have Python, Docker, Firefox, any non-Firefox browser (for example DuckDuckGo browser, Opera or Brave), OnionShare, I2P router, and Lokinet with GUI installed. I2P router and Lokinet should be turned on in order to establish necessary tunnels and paths in advance. I2P's bandwidth parameters should be changed in both router client and I2PSnark client in order to avoid throttling.
 
 \section{Practical exercises}
 
 \subsection{Anonymity by policy and anonymity by design}
-\textbf{Learning outcomes}: After finishing this exercise, a student should be able to tell a difference between those approaches, along with the drawbacks and potential threats of anonymity by policy design.
+\textbf{Learning outcomes}: After finishing this exercise, a student should be able to tell the difference between these approaches, along with the drawbacks and potential threats of anonymity by policy design.
 \begin{enumerate}
     \item Clone the repository from https://github.com/Karakean/Master-Thesis
-    The files related to the educational demonstrator will be within the laboratory/ directory. It will be the working directory for exercise 1 and 2.
+    The files related to the educational demonstrator will be within the laboratory/ directory. It will be the working directory for Exercises 1 and 2.
     \item Run routers as Docker containers:
     \begin{lstlisting}[language=bash]
     docker compose up --build
@@ -53,44 +55,44 @@ Laboratory should be performed on a Debian-based Linux distribution, ideally on 
     \begin{lstlisting}[language=bash]
     python3 client.py
     \end{lstlisting}
-    \item Select “single hop proxy” mode and send "Hello" message.
-    \item Enter the single hop proxy:
+    \item Select "single hop proxy" mode and send the "Hello" message.
+    \item Enter the single-hop proxy:
     \begin{lstlisting}[language=bash]
     docker exec -it single-hop-proxy /bin/bash
     \end{lstlisting}
     \item Read the output.log file.
-    \item \textbf{Question}: What do you see? Do you see any issues with this design? Do you know any services that use this design?
-    \item Exit the client, re-run it with “anonymous communication network” mode and send the same message as before.
+    \item \textbf{Question}: What do you see? Do you see any issues with this design? Do you know of any services that use this design?
+    \item Exit the client, run it again in the "anonymous communication network" mode, and send the same message as before.
     \item Enter the entry node and read the output.log file similarly to how you did it with a single hop proxy.
     \item Repeat for the middle node and the exit node.
-    \item \textbf{Question}: What is the difference compared to the single hop proxy? What has improved and what can be worse? Why is the single hop proxy approach known as anonymity by policy and ACN-based approach as anonymity by design?
+    \item \textbf{Question}: What is the difference compared to the single-hop proxy? What has improved and what can be worse? Why is the single hop proxy approach known as anonymity by policy and the ACN-based approach known as anonymity by design?
 \end{enumerate}
 
 \subsection{Mix-nets and onion routing}
-\textbf{Learning outcomes}: After finishing this exercise a student should be able to tell a difference between ACNs based on Mix-nets and Onion Routing, along with advantages and disadvantages of each design. A student should also be able to name a few use cases for each design.
+\textbf{Learning outcomes}: After finishing this exercise, a student should be able to tell the difference between ACNs based on Mix-nets and Onion Routing, along with the advantages and disadvantages of each design. The student should also be able to name a few use cases for each design.
 \begin{enumerate}
-    \item Run routers analogically to the previous exercise.
-    \item Select “anonymous communication network” mode and send 10 messages with numbers from 1 to 10.
-    \item Enter each node and read output files.
-    \item \textbf{Question}: Consider an attacker who is watching a destination which receives messages from an exit node along with all users that are sending messages to the anonymous communication network. Do you see any issues with current design with regards to such an attacker?
-    \item Change ROUTER\_MODE from “onion-routing” to “mix-net” in the .env file.
+    \item Run the routers analogously to the previous exercise.
+    \item Select "anonymous communication network" mode and send 10 messages with numbers from 1 to 10.
+    \item Enter each node and read the output files.
+    \item \textbf{Question}: Consider an attacker who is watching a destination that receives messages from an exit node along with all users that are sending messages to the anonymous communication network. Do you see any issues with the current design with regard to such an attacker?
+    \item Change ROUTER\_MODE from "onion-routing" to "mix-net" in the .env file.
     \item Re-run the docker containers.
-    \item Once again select “anonymous communication network” mode and send 5 messages with numbers from 1 to 5.
-    \item Enter each node and read output files.
+    \item Once again select the "anonymous communication network" mode and send 5 messages with numbers from 1 to 5.
+    \item Enter each node and read the output files.
     \item \textbf{Question}: What do you see? Justify such a state.
-    \item Send further 5 messages from 5 to 10.
-    \item Enter each node and read output files.
+    \item Send 5 more messages from 5 to 10.
+    \item Enter each node and read the output files.
     \item \textbf{Question}: What do you see? Justify such a state.
     \item \textbf{Question}: What are the main differences between the Mix-nets and Onion Routing? Which design will be more suitable in case of asynchronous communication or whistleblowing and which will be more suitable in latency-vulnerable use cases such as web browsing or instant messaging?
 \end{enumerate}
 
 \subsection{Browsing clearnet with ACNs}
-\textbf{Learning outcomes}: After finishing this exercise a student should be able to configure ACNs for browsing clearnet. A student should be able to point out a preferable ACN for this application area.
+\textbf{Learning outcomes}: After finishing this exercise, a student should be able to configure ACNs for browsing clearnet. A student should be able to point out a preferable ACN for this application area.
 \begin{enumerate}
     \item Download and install Tor Browser https://www.torproject.org/download/
     \item Turn on Tor Browser and enter https://example.com/
     \item \textbf{Question}: Relays from which countries are used within your circuit that is used for this website? Were the actions necessary to visit the website complex and/or difficult?
-    \item Open Firefox browser.
+    \item Open the Firefox browser.
     \item Open the \textit{application menu} and go to \textit{settings}.
     \item Scroll down to the \textit{Network Settings} and open them.
     \item In the \textit{Configure Proxy Access to the Internet} section choose radio button \textit{Manual proxy configuration }
@@ -98,30 +100,30 @@ Laboratory should be performed on a Debian-based Linux distribution, ideally on 
     \item Click the checkbox \textit{Also use this proxy for HTTPS}.
     \item In the section \textit{No proxy for} write localhost, 127.0.0.1
     \item Save the changes.
-    \item Go to the address \textit{about:config}.
+    \item Go to \textit{about:config}.
     \item Ensure that \textit{media.peerConnection.ice.proxy\_only} property is set to \textit{true}.
     \item Change property \textit{keyword.enabled} to \textit{false}.
-    \item Restart Firefox browser.
+    \item Restart the Firefox browser.
     \item Try to reach https://example.com/ from the Firefox browser. Try to refresh it a few times.
-    \item \textbf{Question}: Is it reachable? If not - what may be the reasons behind it? Were the actions necessary to visit the website complex and/or difficult?
+    \item \textbf{Question}: Is it reachable? If not, what may be the reasons behind it? Were the actions necessary to visit the website complex and/or difficult?
     \item Open the Lokinet GUI and make sure the state is \textit{Connected to Lokinet}. If not, click the power button.
     \item In order to make sure that the connection to Lokinet is established run:
     \begin{lstlisting}[language=bash]
     ping directory.loki
     \end{lstlisting}
-    If it works, it means that the Lokinet works properly.
+    If it works, then it means that the Lokinet works properly.
     \item \textbf{Question}: Can ping work over Tor or I2P?
     \item From the GUI turn on the VPN mode.
-    \item \textbf{Question}: Were the actions necessary to turn on the VPN mode complex and/or difficult? Does it work? If not - what may be the reasons behind it? What might help?
-    \item \textbf{Question}: Based on this exercise - which ACN do you find the most suitable for clearnet web browsing?
+    \item \textbf{Question}: Were the actions necessary to turn on the VPN mode complex and/or difficult? Does it work? If not, what may be the reasons behind it? What might help?
+    \item \textbf{Question}: Based on this exercise, which ACN do you find the most suitable for clearnet web browsing?
 \end{enumerate}
 
 
 \subsection{Hidden services}
-\textbf{Learning outcomes}: After finishing this exercise a student should be able to configure Hidden Services within the Tor network. A student should be able to name their advantages and potential use cases.
+\textbf{Learning outcomes}: After finishing this exercise, a student should be able to configure Hidden Services within the Tor network. A student should be able to name their advantages and potential use cases.
 
 \subsubsection{Initial Tor setup}
-In order to create Hidden Services you first need to install necessary packages.
+In order to create hidden services, you first need to install the necessary packages.
 \begin{enumerate}
     \item First update packages. Run:
     \begin{lstlisting}[language=bash]
@@ -131,7 +133,7 @@ In order to create Hidden Services you first need to install necessary packages.
     \begin{lstlisting}[language=bash]
     apt install -y apt-transport-https gnupg
     \end{lstlisting}
-    \item Get current debian release. Run:
+    \item Get the current Debian release. Run:
     \begin{lstlisting}[language=bash]
     lsb_release -c | awk '{print $2}'
     \end{lstlisting}
@@ -142,7 +144,7 @@ In order to create Hidden Services you first need to install necessary packages.
        deb-src [signed-by=/usr/share/keyrings/deb.torproject.org-keyring.gpg] https://deb.torproject.org/torproject.org <DISTRIBUTION> main
     EOF
     \end{lstlisting}
-    Where <DISTRIBUTION> should be replaced with the previous step’s output.
+    Where <DISTRIBUTION> should be replaced with the output of the previous step.
     \item Verify Tor packages:
     {\footnotesize
     \begin{lstlisting}[language=bash, breaklines=true, columns=flexible]
@@ -158,11 +160,11 @@ In order to create Hidden Services you first need to install necessary packages.
 \subsubsection{HTTP}
 \begin{enumerate}
     \item Create a directory with a student ID number as a name. Create index.html with visible ID inside the web page body.
-    \item Run python-based web server:
+    \item Run a python-based web server:
     \begin{lstlisting}[language=bash]
     python3 -m http.server 80 &
     \end{lstlisting}
-    \item Create necessary directory for the Hidden Service:
+    \item Create the necessary directory for the Hidden Service:
     \begin{lstlisting}[language=bash]
     mkdir /var/lib/tor/laboratory_onion_service_website
     \end{lstlisting}
@@ -171,7 +173,7 @@ In order to create Hidden Services you first need to install necessary packages.
     chown -R debian-tor /var/lib/tor/
     chmod 700 -R /var/lib/tor
     \end{lstlisting}
-    \item Modify Tor configuration under /etc/tor/torrc. Add these two lines:
+    \item Modify the Tor configuration under /etc/tor/torrc. Add these two lines:
     \begin{lstlisting}[language=bash]
     HiddenServiceDir /var/lib/tor/laboratory_onion_service_website/
     HiddenServicePort 80 127.0.0.1:80
@@ -181,20 +183,20 @@ In order to create Hidden Services you first need to install necessary packages.
     \begin{lstlisting}[language=bash]
     systemctl restart tor
     \end{lstlisting}
-    \item If everything went successfully then onion address should be visible after running this command:
+    \item If everything went successfully, then onion address should be visible after running this command:
     \begin{lstlisting}[language=bash]
     cat /var/lib/tor/laboratory_onion_service_website/hostname
     \end{lstlisting}
-    \item If something went wrong and the hostname file does not exist, you can find logs with below command:
+    \item If something went wrong and the hostname file does not exist, you can find logs with the following command:
     \begin{lstlisting}[language=bash]
     journalctl -e -u tor@default
     \end{lstlisting}
-    \item Reach onion address via Tor Browser. Due to the NAT/hole punching it is not necessary to open ports on a firewall.
+    \item Reach onion address via Tor Browser. Due to NAT/hole punching, it is not necessary to open ports on a firewall.
     \item \textbf{Question}: What properties do Hidden Services have? What use cases for them can you name?
 \end{enumerate}
 
 \subsubsection{HTTP with authorisation key}
-In this section you will add additional authorization for the web service.
+In this part of the exercise, you will add additional authorisation for the web service.
 \begin{enumerate}
     \item Install necessary packages:
     \begin{lstlisting}[language=bash]
@@ -209,7 +211,7 @@ In this section you will add additional authorization for the web service.
     \begin{lstlisting}[language=bash, breaklines=true, breakatwhitespace=true]
     openssl pkey -in /tmp/website_key.prv.pem -pubout | grep -v " PUBLIC KEY" | base64pem -d | tail --bytes=32 | base32 | sed 's/=//g' > /tmp/website_key.pub.key
     \end{lstlisting}
-    \item Create a directory for authorized clients:
+    \item Create a directory for authorised clients:
     \begin{lstlisting}[language=bash, breaklines=true, breakatwhitespace=true, columns=flexible]
     mkdir  /var/lib/tor/laboratory_onion_service_website/authorized_clients/
     \end{lstlisting}
@@ -259,7 +261,7 @@ In this section you will add additional authorization for the web service.
 \end{enumerate}
 
 \subsubsection{SSH}
-Last stage of this exercise should be done in pairs. One student from the pair will host a Hidden SSH Service and the second one will be a client connecting to it. Steps from 1 to 4 should be performed by the student that will host the Hidden Service.
+The last stage of this exercise should be done in pairs. One student in the pair will host a hidden SSH service, and the second will be a client connecting to it. Steps 1 to 4 should be performed by the student who will host the Hidden Service.
 
 \begin{enumerate}
     \item Install SSH server:
@@ -270,28 +272,28 @@ Last stage of this exercise should be done in pairs. One student from the pair w
     \begin{lstlisting}[language=bash]
     systemctl start ssh
     \end{lstlisting}
-    \item Now edit configuration file under /etc/tor/torrc, adding below lines:
+    \item Now edit the configuration file under /etc/tor/torrc, adding following lines:
     \begin{lstlisting}[language=bash]
     HiddenServiceDir /var/lib/tor/laboratory_onion_service_ssh/
     HiddenServicePort 22 127.0.0.1:22
     \end{lstlisting}
-    Remember about leaving an empty line between existing configurations.
-    \item Perform analogical steps for protecting a Hidden Service with authorisation as you did in the previous stage (steps 2-7).
-    \item The student that will connect to the SSH service needs to perform steps 9-14 analogically as in the previous stage.
-    \item Client should connect to the SSH server by running the command below:
+    Recall that leaving an empty line between existing configurations.
+    \item Perform analogous steps to protect a hidden service with authorisation, as you did in the previous stage (steps 2-7).
+    \item The student who will connect to the SSH service needs to perform steps 9-14 analogously as in the previous stage.
+    \item The client should connect to the SSH server by running the command below:
     \begin{lstlisting}[language=bash]
     torsocks ssh <USER>@<ONION_ADDRESS.onion>
     \end{lstlisting}
-    Where <USER> can be replaced either with root or other existing user. If you choose a root user, remember to check on the server side if the /etc/ssh/sshd\_config file contains the line PermitRootLogin with the value set to \textit{yes}.
+    Where <USER> can be replaced with either root or another existing user. If you choose a root user, remember to check on the server side if the /etc/ssh/sshd\_config file contains the line PermitRootLogin with the value set to \textit{yes}.
     \item \textbf{Question}: What are the benefits of using SSH over Tor?
 \end{enumerate}
 
 \subsection{File sharing with ACNs}
-\textbf{Learning outcomes}: After finishing this exercise, a student should be able to point out differences between Tor and I2P in terms of file sharing. A student should point out a preferable ACN for this use case.
+\textbf{Learning outcomes}: After finishing this exercise, the student should be able to point out the differences between Tor and I2P in terms of file sharing. The student should point out a preferable ACN for this use case.
 \begin{enumerate}
-    \item Lab instructor will provide a link to OnionShare with a file of size 500MB. Measure elapsed time for downloading this file.
+    \item The lab instructor will provide a link to OnionShare with a file of 500 MB in size. Measure the elapsed time to download this file.
     \item Knowing the file size and elapsed time, calculate the download speed for the Tor network.
-    \item Lab instructor will provide a magnet link for I2P snark for the same file. Measure elapsed time for downloading this file. Do not remove the file or turn off the I2P once downloaded - make sure the torrent stays as \textit{seeding}.
+    \item The lab instructor will provide a magnet link for I2P snark for the same file. Measure the elapsed time to download this file. Do not remove the file or turn off the I2P once downloaded - make sure that the torrent remains in the \textit{ seeding} state.
     \item Calculate the download speed for the I2P network.
-    \item \textbf{Question}: Which network was faster? Why? Which network provides a better obfuscation when downloading large files and why?
+    \item \textbf{Question}: Which network was faster? Why? Which network provides better obfuscation when downloading large files and why?
 \end{enumerate}
