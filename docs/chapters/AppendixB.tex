@@ -1,0 +1,125 @@
+\chapter*{Appendix B: Python application for measuring RTT and jitter}
+\label{chap:AppendixB}
+\addcontentsline{toc}{chapter}{Appendix B: Python application for measuring RTT and jitter}
+
+\subsubsection{Server}
+
+The following script is the server component of the Python application to measure RTT and jitter. It listens on port 2135 for incoming TCP connections and handles client requests by echoing received data back to the sender. The server operates in a continuous loop, handling one client connection at a time.
+
+\footnotesize
+\begin{lstlisting}[language=python, breaklines=true, breakatwhitespace=true, showstringspaces=false]
+import socket
+
+HOST = '0.0.0.0'
+PORT = 2135
+BUFFER_SIZE = 1024
+
+def run_server() -> None:
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind((HOST, PORT))
+    server_socket.listen()
+    print(f"TCP latency server is running on port {PORT}...")
+    while True:
+        client_socket, client_addr = server_socket.accept()
+        print(f"Connection from {client_addr}")
+        handle_client(client_socket, client_addr)
+
+def handle_client(client_socket, client_addr) -> None:
+    try:
+        while True:
+            data = client_socket.recv(BUFFER_SIZE)
+            if not data:
+                break
+            client_socket.sendall(data)
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        client_socket.close()
+        print(f"Connection with {client_addr} closed")
+
+if __name__ == "__main__":
+    run_server()
+\end{lstlisting}
+\normalsize
+
+\subsubsection{Client}
+
+This script is the client component of the Python application. It connects to the server (localhost for I2P client tunnel, it should be replaced with appropriate onion address for Tor or loki address for Lokinet) on port 2135 and performs a series of latency measurements by sending timestamped messages and calculating the round-trip time (RTT) for each. The script computes and displays the average RTT, jitter, and packet loss statistics. Although this specific version of the application is designed for reliable in-order delivery via TCP, the client is implemented to handle the potential out-of-order messages. This design choice makes it easy to adapt the script for UDP-based communication, requiring only minor adjustments to the socket type and the socket-related communication logic.
+
+\footnotesize
+\begin{lstlisting}[language=python, breaklines=true, breakatwhitespace=true, showstringspaces=false]
+import socket
+import time
+import statistics
+
+HOST = "127.0.0.1"
+PORT = 2135
+TIMEOUT = 10
+TRIALS = 50
+
+def run_client() -> None:
+    time_pairs = {}  # key: send_time (float), value: recv_time or None
+    try:
+        client_socket = establish_tcp_socket()
+    except Exception as e:
+        print(f"Failed to connect: {e}")
+        return
+    perform_measurements(time_pairs, client_socket)
+    client_socket.close()
+    avg_rtt, jitter, packet_loss = calculate_results(time_pairs)
+    print_results(avg_rtt, jitter, packet_loss)
+
+def establish_tcp_socket() -> socket.socket:
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.settimeout(TIMEOUT)
+    client_socket.connect((HOST, PORT))
+    return client_socket
+
+def perform_measurements(time_pairs, client_socket) -> None:
+    for _ in range(TRIALS):
+        send_time = time.time()
+        send_bytes = str(send_time).encode()
+        time_pairs[send_time] = None
+        try:
+            client_socket.sendall(send_bytes)
+            data = client_socket.recv(1024)
+            recv_time = time.time()
+            try:
+                echoed_send_time = float(data.decode())
+            except ValueError:
+                print("Received malformed response.")
+                continue
+            if echoed_send_time in time_pairs and time_pairs[echoed_send_time] is None:
+                time_pairs[echoed_send_time] = recv_time
+                rtt = recv_time - echoed_send_time
+                print(f"RTT = {rtt:.6f} sec")
+            else:
+                print("Mismatched or duplicate response.")
+        except socket.timeout:
+            print("Timeout occurred.")
+        except Exception as e:
+            print(f"Communication error: {e}")
+        time.sleep(1)
+
+def calculate_results(time_pairs) -> tuple:
+    rtts = [
+        recv - sent
+        for sent, recv in time_pairs.items()
+        if recv is not None
+    ]
+    avg_rtt = sum(rtts) / len(rtts) if rtts else 0
+    jitter = statistics.stdev(rtts) if len(rtts) > 1 else 0
+    packet_loss = ((TRIALS - len(rtts)) / TRIALS) * 100
+    return avg_rtt,jitter,packet_loss
+
+def print_results(avg_rtt, jitter, packet_loss) -> None:
+    print("\n--- Results ---")
+    print(f"Average Latency: {avg_rtt * 1000:.2f} ms")
+    print(f"Jitter: {jitter * 1000:.2f} ms")
+    print(f"Packet Loss: {packet_loss:.2f}%")
+
+if __name__ == "__main__":
+    run_client()
+
+\end{lstlisting}
+\normalsize

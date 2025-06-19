@@ -1,0 +1,90 @@
+\chapter*{Appendix A: Bash scripts for hidden services setup}
+\label{chap:AppendixA}
+\addcontentsline{toc}{chapter}{Appendix A: Bash scripts for hidden services setup}
+
+\subsubsection{Tor}
+This script automates the installation and configuration of the Tor service on a Debian-based system. It sets up two separate onion services, forwarding traffic from the Tor network to local port 2135 for latency measurements. The script provides the proper permissions for the hidden service directories, updates the Tor configuration, and restarts the Tor service to apply the changes. After execution, the generated .onion addresses for the onion service is retrieved. Troubleshooting can be done via system logs if needed.
+
+\footnotesize
+\begin{lstlisting}[language=bash, breaklines=true, breakatwhitespace=true, showstringspaces=false]
+#!/bin/bash
+
+CPU_ARCHITECTURE=$(dpkg --print-architecture)
+DISTRIBUTION=$(lsb_release -c | awk '{print $2}')
+
+apt update
+apt install apt-transport-https
+
+tee /etc/apt/sources.list.d/tor.list > /dev/null <<EOF
+   deb     [signed-by=/usr/share/keyrings/deb.torproject.org-keyring.gpg] https://deb.torproject.org/torproject.org $DISTRIBUTION main
+   deb-src [signed-by=/usr/share/keyrings/deb.torproject.org-keyring.gpg] https://deb.torproject.org/torproject.org $DISTRIBUTION main
+EOF
+
+apt update
+apt install gnupg
+wget -qO- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor | tee /usr/share/keyrings/deb.torproject.org-keyring.gpg >/dev/null
+
+apt update
+apt install tor deb.torproject.org-keyring
+
+mkdir /var/lib/tor/tcp_latency_onion_service
+mkdir /var/lib/tor/tcp_throughput_onion_service
+
+chown -R debian-tor /var/lib/tor/
+chmod 700 -R /var/lib/tor/
+
+cat <<EOF >> /etc/tor/torrc
+HiddenServiceDir /var/lib/tor/tcp_latency_onion_service/
+HiddenServicePort 2135 127.0.0.1:2135
+EOF
+
+systemctl restart tor
+
+cat /var/lib/tor/tcp_latency_onion_service/hostname # get the onion address for the latency app
+# journalctl -e -u tor@default # optionally to troubleshoot
+\end{lstlisting}
+\normalsize
+
+\subsubsection{I2P}
+This script handles the installation of the I2P software on a Debian-based system. It adds the official I2P repository, imports the trusted GPG key, and installs both the core I2P package and its keyring.
+
+\textbf{Note}: Unlike Tor, I2P does not automatically create tunnels for the application through script execution. Tunnels must be manually configured after script execution, which can be most easily accomplished using the web-based I2P Router Console, which is typically accessible at http://localhost:7657.
+
+\footnotesize
+\begin{lstlisting}[language=bash, breaklines=true, breakatwhitespace=true, showstringspaces=false]
+apt-get update
+apt-get install apt-transport-https lsb-release curl
+
+echo "deb [signed-by=/usr/share/keyrings/i2p-archive-keyring.gpg] https://deb.i2p.net/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/i2p.list
+
+curl -o i2p-archive-keyring.gpg https://geti2p.net/_static/i2p-archive-keyring.gpg
+
+gpg --keyid-format long --import --import-options show-only --with-fingerprint i2p-archive-keyring.gpg
+
+cp i2p-archive-keyring.gpg /usr/share/keyrings
+
+apt-get update
+apt-get install i2p i2p-keyring
+\end{lstlisting}
+\normalsize
+
+\subsubsection{Lokinet}
+This script installs and configures Lokinet on a Debian-based system. After installation, it updates the Lokinet configuration to set a private key and assigns a virtual interface IP. Lokinet differs from Tor and I2P in that it makes all listening ports accessible over the network, meaning that any service that is run locally (on any port) can be reached by the Lokinet address. After restarting the service, the Lokinet address is obtained.
+
+\footnotesize
+\begin{lstlisting}[language=bash, breaklines=true, breakatwhitespace=true, showstringspaces=false]
+apt update
+apt install gnupg
+curl -so /etc/apt/trusted.gpg.d/oxen.gpg https://deb.oxen.io/pub.gpg
+echo "deb https://deb.oxen.io $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/oxen.list
+apt update
+apt install lokinet
+
+sed -i 's|#keyfile=.*|keyfile=/var/lib/lokinet/snappkey.private|' /etc/loki/lokinet.ini
+sed -i 's|#ifaddr=.*|ifaddr=172.16.0.1/16|' /etc/loki/lokinet.ini
+systemctl restart lokinet
+
+host -t cname localhost.loki 127.3.2.1 # get the loki address
+\end{lstlisting}
+
+

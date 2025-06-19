@@ -1,6 +1,11 @@
 \chapter{Overview of the anonymous communication networks }
+\label{chap:Overview}
 
-This chapter reviews the history and evolution of Anonymous Communication Networks (ACNs), highlighting key milestones, major designs, technical solutions, and the most influential systems, especially those in use today. The chapter provides context for understanding how modern ACNs developed and introduces the main networks that will be analysed in the following chapters.
+This chapter reviews the history and evolution of Anonymous Communication Networks (ACNs), highlighting key milestones, technical developments, and influential systems that have shaped the field. The aim here is to provide the necessary background and context for understanding how modern ACNs have developed, what problems they were designed to solve, and why specific technical solutions were introduced. By presenting the main network families along with notable systems built on these designs, this chapter sets the foundation for all later analysis.
+
+This overview is intended not only to familiarise the reader with the essential concepts and terminology, but also to clarify the motivation behind each architectural choice. Ultimately, this chapter serves as a reference point for the rest of the thesis, making it possible to understand the specific technical solutions that will be compared in detail later in the thesis.
+
+The chapter begins with a historical overview, then presents the main technical approaches: single-hop proxies, Mix-nets, DC-nets, anonymous publication systems, onion routing, each with description of representative systems and their technical solutions. The chapter concludes with a classification and summary.
 
 \section{History of ACNs}
 The first paper that described the idea of ACN is considered David Chaum's master's thesis on Mix networks \cite{Chaum81}, written in 1979, published in 1981. To this day, most of the anonymous communication systems utilise ideas that were first described by Chaum. The Mix-nets design was ahead of its times, not only in terms of demand for anonymous communication, but also in terms of the computational power needed to repeatedly perform complex public-key cryptographic operations. It took more than a decade for the first anonymous communication networks to be successfully deployed.
@@ -38,9 +43,14 @@ Penet was closed due to legal issues in 1996.
 
 \section{Mix-nets}
 
+The first system that provided anonymity by design was described by David L. Chaum in his master's degree thesis, "Untraceable Electronic Mail, Return Addresses, and Digital Pseudonyms" in February 1979. Mix networks use public-key cryptography to hide both the sender and receiver of an electronic mail, as well as the content of their communication. They do it by encrypting a message with multiple layers of public key encryption and passing them through multiple nodes called mixes. Each node changes the message order, delays them, adds random information and padding in order to minimise the risk of traffic analysis and associating the sender with a given message; in other words, to obfuscate correlation between the input and the output. It also removes the corresponding layer of encryption and passes it on to the next node on the path. The simplified Mix-net architecture is presented in Figure~\ref{fig:mixnet}; each mix within the Mix-net decrypts a message that was previously encrypted with its public key, permutes the messages, and then forwards them to the next node or the final destination.
 
-\subsection{Original design}
-The first system that provided anonymity by design was described by David L. Chaum in his master's degree thesis, "Untraceable Electronic Mail, Return Addresses, and Digital Pseudonyms" in February 1979. Mix networks use public-key cryptography to hide both the sender and receiver of an electronic mail, as well as the content of their communication. They do it by encrypting a message with multiple layers of public key encryption and passing them through multiple nodes called mixes. Each node changes the message order, delays them, adds random information and padding in order to minimise the risk of traffic analysis and associating the sender with a given message; in other words, to obfuscate correlation between the input and the output. It also removes the corresponding layer of encryption and passes it on to the next node on the path.
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.7\linewidth]{Images/mix-net.png}
+  \caption{Simplified Mix-net architecture. By Primepq, Wikimedia Commons~\cite{primepq_mixnet_2008}, licensed under CC BY-SA 3.0.}
+  \label{fig:mixnet}
+\end{figure}
 
 In essence, it can be said that the sender knows all nodes in the path, each node knows only its neighbours, and the receiver knows only the final (exit) node. So, the identity of the recipient is only known to him, the sender, and the exit node; and the identity of the sender is only known to the first (entry) node.
 The sender can send his message anonymously while the recipient can respond to the untraceable return address constructed using a real address, two random strings, and public-key cryptography. Communication participants exchange these addresses through multiple nodes, but only the addressee can decrypt them.
@@ -92,37 +102,50 @@ JAP is an anonymous communication network known by many names: Web MIXes, Java A
 
 Key components of the WebMIXes include: 
 \begin{itemize}
-    \item Java Anon Proxy client - the client software written in Java in order to achieve platform independence. It connects to the first MIX of the MIX network through the Internet. It periodically sets up dedicated bidirectional channels for data transfer. If a user wants to send a message it is first transformed into the MIX-format and passed through the MIX cascade. If a user wants to send a smaller message than a given size, it is padded to avoid volume correlation. On the other hand, if he wants to send a large message or streaming data, the message is split into several time-slices and it is sent slice by slice with an appropriate Slice ID (SI). The idea of slicing was first introduced in the previously mentioned ISDN-MIXes. If there is nothing to send by a given client, a dummy message is sent. An adversary that wants to correlate a message with the specific sender is unable to do so as with equal probability it can be any of the active clients in a given moment and he is unable to tell the difference between the real message slice and a dummy message as they are both encrypted. As the channels are bidirectional, it is also responsible for handling the responses. Messages that are sent via JAP are also filtered in respect of potentially compromising content like cookies and JavaScript. On top of that JAP also utilises Information Service (info-service) in order to measure anonymity. Each user has limited bandwidth and the number of concurrently used time slices. Each time he wants to send a slice he has to provide a ticket. The ticket-based authentication system uses the blind signature algorithm invented by David Chaum \cite{blind-signatures} in order to preserve users' privacy. This authentication mechanism aims to prevent flooding and DoS attacks.
-    \item MIXes cascades - dedicated servers connected with each other through the Internet, although authors in the paper suggest that ideally they should be connected with dedicated high-speed connections instead, however it would be too complex and expensive. The chain of MIXes that mediates between the sender and the receiver is called MIX-cascade. Similarly to the original Mix-net design each MIX node strips a layer of encryption, creates a batch of messages and reorders the messages and forwards the data to the next MIX. The last one in the cascade sends it to the cache-proxy. MIXes, similarly to JAP, also send dummy traffic to each other.
-    \item Cache Proxy - an element responsible for sending the data from the last MIX to a specific web server that the user requested. It sends back the response through the same bidirectional channel, although in a reverse order. It also loads all objects embedded into the requested HTML page. This idea was first introduced in the Crowds project. Moreover, as the name suggests, it is responsible for caching the responses which helps to reduce the number of calls to the Internet.
-    \item Information Service - a service providing information about MIXes’ addresses and public keys, current traffic and MIXes availability and the provided level of anonymity which is calculated by taking into account the number of currently active users which is directly associated with the possibility of the intersection attack. Each user can set a threshold of anonymity he wishes to maintain and once the level falls below that threshold he will be warned.
+    \item Java Anon Proxy client
+    \item MIXes cascades
+    \item Cache Proxy
+    \item Information Service
 \end{itemize}
+
+\textbf{Java Anon Proxy client} is the client software written in Java in order to achieve platform independence. It connects to the first MIX of the MIX network through the Internet. It periodically sets up dedicated bidirectional channels for data transfer. If a user wants to send a message it is first transformed into the MIX-format and passed through the MIX cascade. If a user wants to send a smaller message than a given size, it is padded to avoid volume correlation. On the other hand, if he wants to send a large message or streaming data, the message is split into several time-slices and it is sent slice by slice with an appropriate Slice ID (SI). The idea of slicing was first introduced in the previously mentioned ISDN-MIXes. If there is nothing to send by a given client, a dummy message is sent. An adversary that wants to correlate a message with the specific sender is unable to do so as with equal probability it can be any of the active clients in a given moment and he is unable to tell the difference between the real message slice and a dummy message as they are both encrypted. As the channels are bidirectional, it is also responsible for handling the responses. Messages that are sent via JAP are also filtered in respect of potentially compromising content like cookies and JavaScript. On top of that JAP also utilises Information Service (info-service) in order to measure anonymity. Each user has limited bandwidth and the number of concurrently used time slices. Each time he wants to send a slice he has to provide a ticket. The ticket-based authentication system uses the blind signature algorithm invented by David Chaum \cite{blind-signatures} in order to preserve users' privacy. This authentication mechanism aims to prevent flooding and DoS attacks.
+
+\textbf{MIXes cascades} are dedicated servers connected with each other through the Internet, although authors in the paper suggest that ideally they should be connected with dedicated high-speed connections instead, however it would be too complex and expensive. The chain of MIXes that mediates between the sender and the receiver is called MIX-cascade. Similarly to the original Mix-net design each MIX node strips a layer of encryption, creates a batch of messages and reorders the messages and forwards the data to the next MIX. The last one in the cascade sends it to the cache-proxy. MIXes, similarly to JAP, also send dummy traffic to each other.
+
+\textbf{Cache Proxy} is an element responsible for sending the data from the last MIX to a specific web server that the user requested. It sends back the response through the same bidirectional channel, although in a reverse order. It also loads all objects embedded into the requested HTML page. This idea was first introduced in the Crowds project. Moreover, as the name suggests, it is responsible for caching the responses which helps to reduce the number of calls to the Internet.
+
+\textbf{Information Service} is a service providing information about MIXes’ addresses and public keys, current traffic and MIXes availability and the provided level of anonymity which is calculated by taking into account the number of currently active users which is directly associated with the possibility of the intersection attack. Each user can set a threshold of anonymity he wishes to maintain and once the level falls below that threshold he will be warned.
 
 The WebMIXes project underlined the importance of the usability perspective and ease of configuration and use, as well as the portability of the JAP software so that it could have been run on as many diverse devices as possible. It also provides a built-in integration with web proxies that helps to work behind restrictive proxies, firewalls, et cetera. in order to provide better accessibility.
 
 In JonDonym users also had the possibility of choosing Mix Cascades in order to avoid organisations that they do not trust. In the past, it used to be one of the more recognised ACNs, although as it is not functioning today, it cannot be considered within the comparative analysis.
 
-\subsection{Mixing and batching strategies}
+\subsection{Design considerations}
+
+During the evolution of Mix-nets, several important design considerations emerged, including the development of different mixing and batching strategies, message formats, and network topologies. These aspects played a crucial role in shaping the functionality and security of modern Mix-nets.
+
+\subsubsection{Mixing and batching strategies}
 Several mixing and batching strategies were introduced in various papers and projects. One of the first attempts to provide a formal framework for modelling mixing networks based on the mixing and batching strategy was proposed in 2003 \cite{generalising}. It was based on the 2002 paper \cite{mix-attacks} in which certain types of mix networks were distinguished and categorised along with attacks on them. Those strategies included:
 \begin{itemize}
-    \item threshold mixes: the mix collects a certain numbers of messages and then forwards them, 
-    \item timed mix: the mix forwards messages after a specific time period,
-    \item threshold or timed mix: the mix either collects a certain numbers of messages and then forwards them or forwards messages after a specific time period,
-    \item threshold and timed mix: the mix collects a certain numbers of messages and forwards them after a specific time period,
-    \item threshold pool mix: when $n+f$ messages accumulate in the mix, where n is a threshold and f is a pool size, n randomly chosen messages are forwarded while f messages are kept in the pool for the next iteration,
-    \item timed pool mix: every specific period of time messages are sent, however a fixed number of random messages (a pool) are kept in the mix,
-    \item timed dynamic-pool mix (Cottrell Mix): similar to the timed pool mix combined with threshold pool mix, however only the certain fraction of messages surplus, after the pool subtraction, are forwarded every specific period of time.
+    \item threshold mix
+    \item timed mix
+    \item threshold or timed mix
+    \item threshold and timed mix
+    \item threshold pool mix
+    \item timed pool mix
+    \item timed dynamic-pool mix (Cottrell Mix)
 \end{itemize}
 
-\subsection{Message format}
+\textbf{Threshold mix} is a strategy where the mix collects a certain numbers of messages and then forwards them. In \textbf{timed mix} mixes forwards messages after a specific time period. With \textbf{threshold or timed mix}, the mix either collects a certain numbers of messages and then forwards them or forwards messages after a specific time period. In case of \textbf{threshold and timed mix} the mix collects a certain numbers of messages and forwards them after a specific time period. In \textbf{threshold pool mix} when $n+f$ messages accumulate in the mix, where n is a threshold and f is a pool size, n randomly chosen messages are forwarded while f messages are kept in the pool for the next iteration. In \textbf{timed pool mix} every specific period of time messages are sent, however a fixed number of random messages (a pool) are kept in the mix. Lastly,  
+\textbf{timed dynamic-pool mix (Cottrell Mix)} is similar to the timed pool mix combined with threshold pool mix, however only the certain fraction of messages surplus, after the pool subtraction, are forwarded every specific period of time.
+
+\subsubsection{Message format}
 Over the years, specific message formats for Mix-nets have been proposed to improve security, for example, by hiding metadata and routing information that helps break the linkability between incoming and outgoing messages or protecting against attacks such as the tagging attack where the attacker modifies messages by embedding tags that he wants to detect in other parts of the network in order to get routing information. Minx \cite{minx} was one of the first propositions to address these issues. The format uses RSA for the standard Mix-net encryption along with anonymous reply blocks, AES with IGE mode that helps to detect message manipulation, and, as the IGE mode propagates errors, destroys the modified message by changing the content into garbage. At the same time, the format imposed a low computational and communication overhead. Minx has a vulnerability that was discovered in a 2008 paper \cite{fix-minx}. The paper, besides describing the vulnerability and a chosen ciphertext attack that exploits it, provides a fix for the Minx format that would address this issue by replacing explicit session key and next hop header fields by utilising hash functions.
 
 Yet another message format, Sphinx, was proposed in 2009 \cite{sphinx}. The goal was to provide the most compact and yet fully secure scheme. Sphinx addressed issues of the Minx design while keeping all the desirable properties of it. One of the changes was using ElGamal instead of RSA. Sphinx also includes replay protection and formal proofs of security, which Minx lacked.
 
-\subsection{Topologies}
-There are several possible topologies in the Mix-nets that appeared throughout the years. These topologies were distinguished and analysed in terms of anonymity and overhead in 2010 \cite{topology}. The first topology that appeared in the original Chaum 1981 paper was a cascade topology in which the mixes create a simple path where each node is connected only with its predecessor and successor (excluding the first and last nodes). Due to the unlinkability property of Mix-nets, the cascade can be fixed, and there is no need of permutations of paths as in the onion routing that will be described later. The drawback of this topology is its poor scalability and availability, as each mix in the path is a potential point of failure and there is a high risk of bottlenecks.
-
-Instead of a single cascade, there is also a possibility of a topology where there are many cascades - it is called multi-cascade topology.
+\subsubsection{Topologies}
+There are several possible topologies in the Mix-nets that appeared throughout the years. These topologies were distinguished and analysed in terms of anonymity and overhead in 2010 \cite{topology}. The first topology that appeared in the original Chaum 1981 paper was a cascade topology in which the mixes create a simple path where each node is connected only with its predecessor and successor (excluding the first and last nodes). Due to the unlinkability property of Mix-nets, the cascade can be fixed, and there is no need of permutations of paths as in the onion routing that will be described later. The drawback of this topology is its poor scalability and availability, as each mix in the path is a potential point of failure and there is a high risk of bottlenecks. Instead of a single cascade, there is also a possibility of a topology where there are many cascades - it is called multi-cascade topology.
 
 One of the alternate topologies is a fully connected network, where each node is connected to any other node in the network. It fixes the availability issue as there are many potential routes from one mix to the other. It does not fix the issue of scalability, as adding a new node implicates the necessity of adding a connection to every other node in the network. The drawback of this topology is the fact that messages cannot be freely mixed as there are several possible directions for a message from the node.
 
@@ -138,13 +161,15 @@ The Nym network was described in 2021 \cite{nym}. The network is based on the Mi
 
 Nym network architecture consists of the following elements:
 \begin{itemize}
-    \item mix nodes: nodes that create a network called Mix-net that relays, decrypts its specific layer of encryption, reorders and delays messages asynchronously as in the Loopix network
-    \item gateways: entry points for the Nym network. Users can choose whether they want to always use the same gateway or not. Similarly to the Loopix design, they are also able to store messages for users that are offline
-    \item service providers: entities that provide certain services through the Nym network. They receive cover traffic that is indistinguishable from the real users’ traffic, which enhances users’ privacy
-    \item Nym blockchain: decentralised blockchain structure, maintained by validators, that distributes network-wide information regarding public node reachability and public keys, configuration parameters and other publicly available data that is necessary for proper functioning of the Nym network
-    \item nympool: shared pool of funds supporting the Nym network. Periodically validators algorithmically distribute rewards from the nympool to the nodes (validators, gateways, mixes) and to the service providers that redeem users’ service credentials.
-    \item validators: validators maintain the Nym blockchain, including nympool, as well as issue bandwidth and service credentials that prove the allowance of sending data through the Mix-net and the right to access a certain service, respectively.
+    \item mix nodes
+    \item gateways
+    \item service providers
+    \item Nym blockchain
+    \item nympool
+    \item validators
 \end{itemize}
+
+\textbf{Mix nodes} are nodes that create a network called Mix-net that relays, decrypts its specific layer of encryption, reorders and delays messages asynchronously as in the Loopix network. \textbf{Gateways} are entry points for the Nym network. Users can choose whether they want to always use the same gateway or not. Similarly to the Loopix design, they are also able to store messages for users that are offline. \textbf{Service providers} are entities that provide certain services through the Nym network. They receive cover traffic that is indistinguishable from the real users’ traffic, which enhances users’ privacy. \textbf{Nym blockchain} is a decentralised blockchain structure, maintained by validators, that distributes network-wide information regarding public node reachability and public keys, configuration parameters and other publicly available data that is necessary for proper functioning of the Nym network. \textbf{Nympool} is a shared pool of funds supporting the Nym network. Periodically validators algorithmically distribute rewards from the nympool to the nodes (validators, gateways, mixes) and to the service providers that redeem users’ service credentials. \textbf{Validators} maintain the Nym blockchain, including nympool, as well as issue bandwidth and service credentials that prove the allowance of sending data through the Mix-net and the right to access a certain service, respectively.
 
 The flow of users connecting to the service provider in the Nym network works as follows: A user deposits his NYM tokens, earned by operating a node, purchased or received from a service provider, in the nympool and obtains credentials with the help of the validators. These credentials cannot be directly linked to their use due to blind signatures. With the bandwidth credential, the user can access the gateway of his choice. The gateway validates the token on the Nym blockchain and submits a commitment of the credential to the validators in order to avoid double-spending. The user and the gateway establish a shared secret for data encryption and a pseudonym associated with the credential that allows for tracking bandwidth consumption as well as for offline storage. From now on, until the bandwidth credential expiration or consumption, the user can use the Nym Mix-net through the gateway. Although the gateway has knowledge of when the user is accessing the network, it is not aware of where his messages are sent. The message from the user is sent to the recipient’s gateway, from which the recipient can pull the messages. The recipient is either a service provider, a validator, or another user. If the recipient is a service provider that provides a paid service, a service credential is needed to access the service. The logic behind the handling of the service credentials is similar to that of the bandwidth credential.
 
@@ -156,21 +181,24 @@ Besides Loopix-based designs, there are also unrelated recent approaches to the 
 
 \section{DC-nets}
 
-\subsection{Original design}
 DC-nets are anonymous communication networks based on the dining cryptographers problem described by David Chaum in his 1988 paper \cite{dc-nets}. Despite the name, the problem is not related to the dining philosophers problem. It considers the problem of secure multiparty computation of the boolean XOR function. 
 The problem can be described as follows: assume that three cryptographers are dining together. The waiter informs them that their meal has already been paid for by someone but does not reveal the identity of the payer. It is assumed to be one of the dining cryptographers or the National Security Agency (NSA). In order to determine whether it was one of them who paid or the NSA, they have to perform a certain two-stage protocol.
 
 In the first stage, every pair of cryptographers establishes a one-bit secret. For three dining cryptographers, there are three such secrets: AB, AC, BC.
 In the second stage, each cryptographer who did not pay announces the result of an XOR operation on the secrets he shares with his two neighbours. On the other hand, if a certain cryptographer paid, he announces the opposite of this XOR operation.
 
-After three announcements are revealed, it can be determined whether it was one of the cryptographers who paid or was it NSA. This can be done by performing another XOR operation on these three bits. If the result is zero, or, in other words, if the number of ones is even, it means that it was one of the cryptographers who paid for the meal. If the result is one, it means that the NSA paid.
+After three announcements are revealed, it can be determined whether it was one of the cryptographers who paid or was it NSA. This can be done by performing another XOR operation on these three bits. If the result is one, it means that it was one of the cryptographers who paid for the meal. If the result is zero, it means that none of the cryptographers paid; therefore, the NSA paid.
 
-There are several limitations to this problem:
-\begin{itemize}
-    \item only one cryptographer can pay for the meal,
-    \item each cryptographer is trustworthy, meaning he always presents information that is true,
-    \item each cryptographer must share a secret with every other participant, meaning that will be in total $n * (n-1) / 2$ connections, creating a complete graph.
-\end{itemize}
+Figure~\ref{fig:dining_cryptographers} illustrates two scenarios in the dining cryptographers protocol: the case in which none of the cryptographers pays for the meal, and the case in which cryptographer \textit{A} pays.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.7\linewidth]{Images/dc.png}
+  \caption{Illustration of the dining cryptographers problem. By PauAmma, Wikimedia Commons~\cite{dining_cryptographers_pauamma}, licensed under CC BY‑SA 3.0}
+  \label{fig:dining_cryptographers}
+\end{figure}
+
+There are several limitations to the dining cryptographers problem. Firstly, only one cryptographer can pay for the meal. Secondly, each cryptographer is trustworthy, meaning he always presents information that is true. Thirdly, each cryptographer must share a secret with every other participant, meaning that will be in total $n * (n-1) / 2$ connections, creating a complete graph.
 
 The proposed protocol to solve the dining cryptographers problem can be easily converted to anonymous communication of longer messages. While sending messages bit-by-bit might be problematic, it can be replaced with fixed-size blocks, and the sender, instead of performing a negation of the XOR operation he performed on the secrets he shares with his neighbours, performs an XOR of these secrets with his message. The message is broadcasted by design; however, certain improvements can be made in order to provide confidentiality and authenticity - public-key cryptography can be utilised where each participant can have a public key associated with a pseudonym. The sender can include a digital signature in his message to prove the authenticity of the message. Moreover, in order to provide confidentiality (or secrecy), he can encrypt this message with the public key of the recipient he wants his message to be transferred to. Each network member will receive the encrypted message; however, only the recipient, the owner of the private key, will be able to decrypt it.
 
@@ -208,6 +236,21 @@ For the sake of clarity, this paper will use the names Freenet and Hyphanet inte
 
 The main goal of Hyphanet is to provide a way to anonymously share files, browse and publish Hyphanet websites and chat on forums without censorship. Ian Clarke emphasised the importance of freedom of speech and the fact that if some institution has a possibility to control the information that people have access to, then the institution can influence peoples’ opinion.
 
+Each participant contributes a portion of their disk space and bandwidth to the network, forming a distributed data store.
+
+When a user wishes to publish content, the data is encrypted, divided into chunks, and inserted into Hyphanet along with a cryptographic key. These chunks are distributed across participating nodes based on availability and demand, without any central authority. To retrieve content, a user requests the appropriate key, which is propagated through the network via a series of nodes; each node checks its local cache and forwards the request closer to the data's likely location. As data is retrieved and passed back through the network, nodes cache  content fragments, optimising future access and improving resilience against node loss or censorship. A typical request is presented in \ref{}.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.75\linewidth]{Images/freenet.png}
+  \caption{Request sequence in the Hyphanet (Freenet) network. By XcepticZP, Wikimedia Commons~\cite{freenet_request_sequence_zp}, licensed under CC BY-SA 3.0.}
+  \label{fig:freenet_sequence}
+\end{figure}
+
+Hyphanet supports both \emph{opennet} and \emph{darknet} operating modes. In opennet, nodes automatically connect to random peers. In darknet mode, connections are established manually between trusted friends, providing additional resistance to traffic analysis and surveillance.
+
+Routing in Hyphanet is adaptive: nodes maintain routing tables indicating which peers are most likely to have certain keys, and these tables are refined through continual use. The combination of strong encryption, distributed storage, and dynamic routing mechanisms ensures anonymity for both publishers and retrievers, while making it extremely difficult for adversaries to censor content or trace information flow within the network.
+
 Hyphanet therefore aims to allow two or more people to share information freely, without government or other entity’s control.
 At the same time, Hyphanet assumes that it is impossible to have freedom of speech without being anonymous, as it is easier to punish those who proclaim things that are not appealing to the censor rather than preventing them to do so. Hyphanet also proposed solutions to the problem of trust in the anonymous system.
 
@@ -228,10 +271,10 @@ The project has greatly evolved through the years, and now GNUnet is a framework
 
 \section{Onion routing}
 While Chaum's Mix-nets provided a satisfactory level of anonymity, most of the solutions based on them introduced significant latencies and could not be used for latency-vulnerable use cases. One of the first proposals that aimed to address this issue was the ISDN-MIXes network, although it was mainly focused on the ISDN network. A different and more universal approach was PipeNet \cite{pipenet}, a protocol for low-latency anonymous communication. It was based on a network of nodes, identified by their public keys, that communicated asynchronously with each other over secure links, creating a mesh network topology. The main drawback of the network was that it assumed fully utilised links, which are expensive.
+
 Another proposition was the UDP-based Freedom System \cite{freedom}. The primary goal of Freedom was to create a system with the strongest privacy, ease of use, and integration. Freedom used a circuit-based solution named the telescope encryption.
 The solution that turned out to be the most used for low-latency anonymity communication was onion routing.
 
-\subsection{Original design}
 In 1995 the U.S. Naval Research Lab (NRL) researchers started working on the first prototypes of onion routing.  The first paper about the Onion Routing was released in 1996, however the final version of it was first published in 1997 and a year later, in 1998, it was published in IEEE Journal on Selected Areas in Communication \cite{onion-routing98}.
 
 Onion routing enables anonymous connections that are highly resistant to surveillance, tracking and traffic analysis. Onion routing provides a near real-time bidirectional connection similar to the TCP socket connections. Regular Internet applications can access anonymous connections via proxies, which additionally can remove identifying information from the data stream and therefore make the communication anonymous.
@@ -277,6 +320,15 @@ Tor nodes can advertise exit policies that describe hosts and ports to which a n
 
 Initially Tor did not try to hide the fact that a certain user is using the network - it changed over time when regimes started to censor Tor and it was necessary to fight back - the censorship resistance became another goal of the Tor network. Today, Tor circumvents censorship with bridges that are not publicly listed relays, along with pluggable transports, a way of masking traffic.
 
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.75\linewidth]{Images/tor.png}
+  \caption{Tor circuit diagram by Justin Tracey (Wikimedia: Tga.D), originally published in \cite{tracey_thesis}. Available on Wikimedia Commons~\cite{tracey_tor_circuit}, licensed under CC BY‑SA 4.0.}
+  \label{fig:tor_circuit}
+\end{figure}
+
+The visualisation in Figure~\ref{fig:tor_circuit} illustrates onion routing using the example of Tor. The bidirectional connections between Tor nodes, as well as the link between the Tor client and the entry guard, are encrypted using symmetric cryptography of Tor; however, the link between the exit node and the destination server is not.
+
 \subsubsection{Design and architecture overview}
 Tor does not protect against a strong global passive adversary and therefore it is not secure against end-to-end traffic correlation attacks. It can protect against local passive adversaries that observe a certain fraction of a network, against generation, modification, deletion and delay of traffic or against operating or compromising some number of the onion routers. The main reason for sacrificing stronger anonymity is to achieve a compromise between anonymity, usability, and efficiency.
 
@@ -301,12 +353,17 @@ Due to several flaws with SOCKS in the initial Tor design that could have led fo
 
 Similarly to closing TCP streams, Tor uses two-step handshake for normal closing, which is especially useful for half-closed connections, and one-step handshake for errors.
 
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.8\linewidth]{Images/tor-circuit.png}
+  \caption{Tor circuit setup process. Source: The Tor Project specification~\cite{torproject-specs}, licensed under CC BY 4.0.}
+  \label{fig:tor_spec}
+\end{figure}
+
+Figure~\ref{fig:tor_spec} presents a sequence diagram that describes the typical circuit setup process in standard Tor usage. Initially, the user requests a signed list of relays (the directory document) from the directory servers and receives this information in response. Using the directory document, the user selects three relays to form a circuit. The circuit is then established using the telescope approach, where encrypted channels are incrementally opened through each relay, one at a time. Once the circuit is fully established, it enables secure bidirectional communication between the user and destination until the circuit teardown.
+
 \subsubsection{QoS}
-\begin{enumerate}
-    \item Congestion control: congestion control in Tor is achieved on several levels. Firstly, it utilises TCP along with its mechanisms of congestion control and in-order guarantees. Secondly, circuit-level throttling to control the bandwidth within the circuit, where each onion router keeps a track of two windows for incoming and outgoing traffic. Thirdly, an end-to-end stream-level throttling is introduced, similar to the circuit one, however utilising a single window.
-    \item Fairness and rate limiting: in order to limit bandwidth usage Tor uses a token bucket algorithm, that helps to achieve long-term average rate of bandwidth but at the same time allowing for infrequent sudden spikes.
-    Moreover, streams can be categorised based on the frequency of cells' appearance in order to provide a better latency for interactive streams. The risk of an end-to-end attack in this case is not an additional threat as Tor is already vulnerable to these types of attacks.
-\end{enumerate}
+Tor includes mechanisms of QoS: congestion control, fairness and rate limiting. \textbf{Congestion control} in Tor is achieved on several levels. Firstly, it utilises TCP along with its mechanisms of congestion control and in-order guarantees. Secondly, circuit-level throttling to control the bandwidth within the circuit, where each onion router keeps a track of two windows for incoming and outgoing traffic. Thirdly, an end-to-end stream-level throttling is introduced, similar to the circuit one, however utilising a single window. To limit bandwidth usage and provide \textbf{fairness and rate limiting} Tor uses a token bucket algorithm, that helps to achieve long-term average rate of bandwidth but at the same time allowing for infrequent sudden spikes. Moreover, streams can be categorised based on the frequency of cells' appearance in order to provide a better latency for interactive streams. The risk of an end-to-end attack in this case is not an additional threat as Tor is already vulnerable to these types of attacks.
 
 \subsubsection{Onion Services}
 Tor can not only provide anonymity for the sender, which was described above, but also for the server itself (responder anonymity). It can be achieved thanks to Tor’s onion services, previously known as hidden services or location-hidden services. The server anonymity can have many benefits, which will be described in the use cases and application areas section.
@@ -321,21 +378,18 @@ Finally, an important and practical feature of onion services is that they work 
 
 \subsubsection{Bridges}
 Tor Bridges are Tor relays that are not publicly listed as standard nodes. They often offer additional functionalities, such as traffic obfuscation. Bridges were introduced in response to the censorship of traditional nodes or directory authorities that are easy to block due to their public availability, and the Tor project in advance planned for this. The idea was to simply encourage users from less censored parts of the world to offer themselves as private relays that will not be publicly listed for the people in censored countries.
-Different ways of distributing bridges:
-\begin{enumerate}
-    \item From the Tor website: https://bridges.torproject.org/
-    \item Via e-mails from bridges@torproject.org upon request. Currently, it is required to send the request from a Gmail or Riseup email address.
-    \item Every user can set up a bridge and share it with whom he wants
-\end{enumerate}
+Bridges can be distributed directly from the Tor website \cite{tor-bridges}, via e-mails from bridges@torproject.org upon request (currently it is required to send the request from a Gmail or Riseup email address) or by other means; any person can set up a bridge relay and privately share it with whom he wants.
 
 \subsubsection{Pluggable transports}
 Pluggable transports are modules that obfuscate traffic, so anyone monitoring the network activity of a user running Tor with a pluggable transport will see traffic that does not look like typical Tor usage. There are several types of pluggable transports (PTs):
 \begin{enumerate}
-    \item Obfsproxy: the first pluggable transport, created in 2012, encrypts the traffic so that no specific headers are recognisable. In this case censors can either block all unrecognisable traffic, which will result in a massive number of false positive cases, or allow it, which is usually done.
-    \item Meek: pluggable transport created in 2014, based on domain fronting via Amazon Web Services (AWS), Microsoft Azure, or Google Cloud Platform (GCP). The basic idea behind it is to route user traffic to a cloud provider and from within the cloud reach the Tor network.
-    \item Snowflake: pluggable transport that works as a JavaScript code executed in the volunteers' browsers. The client connects to the Snowflake proxy of the volunteer through WebRTC that obfuscates his traffic, making it appear as, for example, a video call. The major advantage of this kind of pluggable transport is the simplicity of deployment without the need of dedicated software other than browser extension, although there are also dedicated standalone snowflake proxies aimed at long-term connections. The more people join as a snowflake proxy, the more difficult it will become to censor traffic without a large number of false positives.
-    \item WebTunnel: officially announced in 2024 is a new kind of bridge that aims to circumvent censorship in heavily censored countries. Using an HTTPS proxy, similar to HTTPT \cite{httpt}. Contrary to Obfsproxy, it aims to mimic a real web server, rather than appearing as unrecognisable traffic.
+    \item Obfsproxy
+    \item Meek
+    \item Snowflake
+    \item WebTunnel
 \end{enumerate}
+
+\textbf{Obfsproxy} is the first pluggable transport, created in 2012, encrypts the traffic so that no specific headers are recognisable. In this case censors can either block all unrecognisable traffic, which will result in a massive number of false positive cases, or allow it, which is usually done. \textbf{Meek} is a pluggable transport created in 2014, based on domain fronting via Amazon Web Services (AWS), Microsoft Azure, or Google Cloud Platform (GCP). The basic idea behind it is to route user traffic to a cloud provider and from within the cloud reach the Tor network. \textbf{Snowflake} is yet another pluggable transport that works as a JavaScript code executed in the volunteers' browsers. The client connects to the Snowflake proxy of the volunteer through WebRTC that obfuscates his traffic, making it appear as, for example, a video call. The major advantage of this kind of pluggable transport is the simplicity of deployment without the need of dedicated software other than browser extension, although there are also dedicated standalone snowflake proxies aimed at long-term connections. The more people join as a snowflake proxy, the more difficult it will become to censor traffic without a large number of false positives. \textbf{WebTunnel}, officially announced in 2024, is a new kind of bridge that aims to circumvent censorship in heavily censored countries. Using an HTTPS proxy, similar to HTTPT \cite{httpt}. Contrary to Obfsproxy, it aims to mimic a real web server, rather than appearing as unrecognisable traffic.
 
 \subsection{I2P}
 
@@ -365,12 +419,20 @@ The I2P router is an entity that participates in routing the traffic of users. I
 Destinations are cryptographic identifiers of applications within the network. The fact that a user has reached a given destination is a secret. In addition, the user who reached the destination remains anonymous.
 
 \subsubsection{Network database}
-The network database, netDb, is a distributed hash table (DHT) database based on the Kademlia algorithm that is responsible for the sharing of metadata on the network. The database is maintained by a subset of routers called floodfill routers. They are normal routers with high bandwidth, which constitute about 6\% of the network. There are two types of metadata:
-\begin{enumerate}
-    \item leaseSets: gives the instructions necessary to reach the particular destinations. LeaseSets also include a number of leases, where each lease specifies a tunnel gateway that is necessary to reach a particular destination. Lease information includes a pair of public keys for message encryption, tunnel expiration time, and recipient inbound gateway. LeaseSets are distributed through outbound tunnels to avoid correlation between leaseSets and their router and to remain the router’s identity.
-    There is a possibility of private encrypted leaseSets for the purpose of reaching services that must not be publicly available. Such encrypted leaseSets are not published on the netDb and require appropriate decryption keys.
-    \item routerInfo: gives the instructions for reaching the specific router. These instructions include a unique ID in the form of a cryptographic public key,  transport addresses and ports, timestamps, and other options that can be utilised by the user, everything digitally signed and the signature is also attached. RouterInfo is distributed by the routers directly to netDb, as this information should not be a secret.
-\end{enumerate}
+The network database, netDb, is a distributed hash table (DHT) database based on the Kademlia algorithm that is responsible for the sharing of metadata on the network. The database is maintained by a subset of routers called floodfill routers. They are normal routers with high bandwidth, which constitute about 6\% of the network. There are two types of metadata. 
+
+The first is \textbf{leaseSets}. It gives the instructions necessary to reach the particular destinations. LeaseSets also include a number of leases, where each lease specifies a tunnel gateway that is necessary to reach a particular destination. Lease information includes a pair of public keys for message encryption, tunnel expiration time, and recipient inbound gateway. LeaseSets are distributed through outbound tunnels to avoid correlation between leaseSets and their router and to remain the router’s identity. There is a possibility of private encrypted leaseSets for the purpose of reaching services that must not be publicly available. Such encrypted leaseSets are not published on the netDb and require appropriate decryption keys.
+
+The second one is \textbf{routerInfo}; it gives the instructions for reaching the specific router. These instructions include a unique ID in the form of a cryptographic public key,  transport addresses and ports, timestamps, and other options that can be utilised by the user, everything digitally signed and the signature is also attached. RouterInfo is distributed by the routers directly to netDb, as this information should not be a secret.
+
+Figure~\ref{fig:i2p_topology} illustrates the use of inbound and outbound tunnels for Alice and Bob within the I2P network. For simplicity, Charlie's inbound tunnel and Dave's outbound tunnel are omitted from the diagram. The network database contains the information necessary to allow participants to discover and reach each other's inbound tunnels.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.75\linewidth]{Images/i2p.png}
+  \caption{Simplified I2P network topology. Source: I2P documentation \cite{i2p-topology}, licensed under CC BY‑SA 4.0.}
+  \label{fig:i2p-topology}
+\end{figure}
 
 \subsubsection{Tunnels and garlic routing}
 A tunnel is a short-living, direct path between two points underlaid by several routers between, where layered encryption is utilised. Each router can decrypt (or "peel") the encryption layer and forward the message to the next router. The first router in the path, a tunnel starting point, is called a gateway. Tunnel ends with an endpoint. Tunnels are only one-way and for responses additional tunnel is needed. That is why there are two types of tunnels in I2P that are required for two-way communication: inbound and outbound. Inbound tunnels, as the name suggests, bring messages to the tunnel initiator and outbound tunnels send messages from the tunnel initiator. Sender’s outbound endpoint will pass the message to the recipient’s inbound gateway given appropriate instruction to forward the message. Utilising two one-way tunnels instead of one two-way tunnel makes traffic analysis harder for the adversary.
@@ -387,43 +449,49 @@ While I2P initially proposed the introduction of batching, mixing, throttling, p
 
 Routers are chosen for the tunnel based on various metrics, including their bandwidth, capacity measured by successfully built tunnels, which is the direct indicator of their reliability, family diversity, as well as on manually adjustable individual preferences.
 
+Figure~\ref{fig:i2p-encryption} illustrates the multiple layers of cryptography applied to messages in the I2P network, effectively providing three layers of encryption: on the link level, tunnel level, and end-to-end.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.75\linewidth]{Images/i2p-encryption.png}
+  \caption{Message encryption in I2P. Source: I2P documentation \cite{i2p-encryption}, licensed under CC BY‑SA 4.0.}
+  \label{fig:i2p-encryption}
+\end{figure}
+
 \subsubsection{I2P protocol stack}
 The Invisible Internet Project proposes its protocol stack on top of which applications can be built. For analysis purposes, references to the OSI and TCP/IP stacks will be made. In theory, the TCP/IP transport layer and all lower layers are also a part of the stack; however, the overview will focus solely on the I2P-specific stack. Beginning from the bottom of I2P stack:
 \begin{enumerate}
-    \item I2P Transport Layer: in TCP/IP and ISO/OSI stack this layer and each layer after that could be placed in the application layer, however this specific layer can also be treated as an overlay on the traditional transport layer. I2P Transport Layer is responsible for providing encrypted connections between the I2P routers. These are not anonymous end-to-end connections but simple, not anonymous, hop-by-hop connections. In I2P Transport Layer there are two protocols that are based on UDP and TCP:
-    \begin{enumerate}
-        \item SSU2: Secure Semi-reliable UDP
-        \item NTCP2: NIO-based TCP
-    \end{enumerate}
-In the future, this layer can also provide additional obfuscation that will make it harder for the censor to block I2P traffic.
-    \item I2P Tunnel Layer: layer that provides tunnel connections with full encryption. Protocol data units used within the I2P tunnel layer are tunnel messages and I2NP (I2P Network Protocol) messages. I2NP are messages used to pass information through multiple routers. Multiple I2NP messages layered encrypted along with instructions necessary for their delivery are combined into a larger tunnel message which has a fixed size of 1024 bytes. Each hop in the path removes (decrypts) its layer, reads an instruction and forwards the message to another router.
-    \item I2P Garlic Layer: layer providing anonymous and encrypted end-to-end message delivery.
-    Similarly to the tunnel layer, the I2P Garlic Layer uses I2NP messages. They are wrapped in layers to ensure anonymity for the sender as well as for the receiver. Garlic messages expand standard onion messages by allowing the message to contain multiple cloves. A clove is a fully formed message with delivery instructions.
-\end{enumerate}
-Mentioned layers are considered as I2P core layers. There are also additional layers that are considered non-core layers:
+\item I2P Transport Layer
 \begin{enumerate}
-    \item I2P Client Layer: layer providing ability to use I2P without direct router API usage. I2CP or I2P Client Protocol is a protocol of this layer. It provides asynchronous and secure communication by sending messages over the I2CP TCP socket between a client and a router.
-    \item I2P End-to-End Transport Layer: layer providing functionalities similar to TCP and UDP from the TCP/IP transport layer over the I2P network. Two prominent solutions that exist within this layer are:
-    \begin{enumerate}
-        \item Streaming library: functionality similar to  TCP streams over I2P network.
-        \item Datagram library: messaging similar to UDP over I2P network.
-    \end{enumerate}
-    \item I2P Application Interface Layer: layer providing libraries that make development on top of I2P easier. The protocols of this layer use the protocols of the I2P End-to-End Transport Layer. Example protocols:
-    \begin{itemize}
-        \item SAMv3: supports multiple communication types, including reliable in-order TCP-like streams, UDP-like datagrams or unauthenticated raw ones with minimal overhead. It supports many programming languages as well. SAMv3 can be used for creating I2P-native applications.
-        \item I2PTunnel: for creating general-purpose TCP-based connection, enabling a seamless proxying of existing non-I2P applications into the I2P network without the need of writing I2P-specific code.
-    \end{itemize}
-    \item I2P Application Proxy Layer: layer, used for proxy systems. Example protocols: SOCKS, HTTP, IRC.
-    \item I2P Application Layer: common name for the applications that can be built on top of the I2P stack.
+\item SSU2: Secure Semi-reliable UDP
+\item NTCP2: NIO-based TCP
+\end{enumerate}
+\item I2P Tunnel Layer
+\item I2P Garlic Layer
 \end{enumerate}
 
+The \textbf{I2P Transport Layer}, in the context of the TCP/IP and ISO/OSI stacks, as well as each layer after it, could be placed in the application layer. However, this specific layer can also be treated as an overlay on the traditional transport layer. This layer is responsible for providing encrypted connections between the I2P routers. These are not anonymous end-to-end connections but simple, not anonymous, hop-by-hop connections. In the I2P Transport Layer there are two protocols that are based on UDP and TCP: \textbf{SSU2} (Secure Semi-reliable UDP) and \textbf{NTCP2} (NIO-based TCP). In the future, this layer can also provide additional obfuscation that will make it harder for censors to block I2P traffic. The \textbf{I2P Tunnel Layer} is the layer that provides tunnel connections with full encryption. Protocol data units used within the I2P Tunnel Layer are tunnel messages and I2NP (I2P Network Protocol) messages. I2NP are messages used to pass information through multiple routers. Multiple I2NP messages, layered and encrypted along with instructions necessary for their delivery, are combined into a larger tunnel message which has a fixed size of 1024 bytes. Each hop in the path removes (decrypts) its layer, reads an instruction, and forwards the message to another router. The \textbf{I2P Garlic Layer} provides anonymous and encrypted end-to-end message delivery. Similarly to the tunnel layer, the I2P Garlic Layer uses I2NP messages. They are wrapped in layers to ensure anonymity for the sender as well as for the receiver. Garlic messages expand standard onion messages by allowing the message to contain multiple cloves. A clove is a fully formed message with delivery instructions.
+
+Mentioned layers are considered as I2P core layers. There are also additional layers that are considered non-core layers:
+
+\begin{enumerate}
+\item I2P Client Layer
+\item I2P End-to-End Transport Layer
+\begin{enumerate}
+\item Streaming library
+\item Datagram library
+\end{enumerate}
+\item I2P Application Interface Layer
+\item I2P Application Proxy Layer
+\item I2P Application Layer
+\end{enumerate}
+
+The \textbf{I2P Client Layer} provides the ability to use I2P without direct router API usage. \textbf{I2CP}, or \textbf{I2P Client Protocol}, is a protocol of this layer. It provides asynchronous and secure communication by sending messages over the I2CP TCP socket between a client and a router. The \textbf{I2P End-to-End Transport Layer} provides functionalities similar to TCP and UDP from the TCP/IP transport layer, but over the I2P network. Two prominent solutions that exist within this layer are the \textbf{Streaming library} (functionality similar to TCP streams over the I2P network) and the \textbf{Datagram library} (messaging similar to UDP over the I2P network). The \textbf{I2P Application Interface Layer} provides libraries that make development on top of I2P easier. The protocols of this layer use the protocols of the \textbf{I2P End-to-End Transport Layer}. Example protocols include \textbf{SAMv3}, which supports multiple communication types, including reliable in-order TCP-like streams, UDP-like datagrams, or unauthenticated raw ones with minimal overhead. It supports many programming languages as well and can be used for creating I2P-native applications. Another example is \textbf{I2PTunnel}, which is used for creating general-purpose TCP-based connections, enabling seamless proxying of existing non-I2P applications into the I2P network without the need for writing I2P-specific code. The \textbf{I2P Application Proxy Layer} is used for proxy systems. Example protocols for this layer include SOCKS, HTTP, and IRC. Finally, the \textbf{I2P Application Layer} is a common name for the applications that can be built on top of the I2P stack.
+
 \subsubsection{I2P applications}
-There are many I2P applications, some of them included within the I2P install bundle. Those include for example:
-\begin{itemize}
-    \item Naming library and address book: web-of-trust-based, local naming system included within the bundle. Specific long I2P addresses can be added as a human-readable entry in the address book.
-    \item I2PSnark: BitTorrent client working within the I2P network. Although it is not the only BitTorrent client available, it is the one that is shipped within the install bundle. In general it is impossible to connect to non-I2P torrents from within the I2P and vice versa.
-    \item I2Pmail/susimail: internal and external email service working within I2P.
-\end{itemize}
+
+There are many I2P applications, some of which are included within the standard I2P install bundle. One example of a bundled application is the \textbf{naming library and address book} - a web-of-trust-based, local naming system that allows users to add specific long I2P addresses as human-readable entries in their address book. Another included application is \textbf{I2PSnark}, a BitTorrent client that works entirely within the I2P network. While it is not the only BitTorrent client available for I2P, it is the default choice shipped with the install bundle. Typically, it is not possible to connect to non-I2P torrents from within I2P, or vice versa. Additionally, the bundle includes \textbf{I2Pmail}, also known as susimail, which is an internal and external email service operating over the I2P network.
+
 There is also the possibility of creating custom applications and distributing them as I2P plug-ins which can then be easily integrated with I2P routers from other users. Users can access the I2P router API for example via a simple JSONRPC2 interface. 
 The I2P network allows services to be hosted anonymously in the I2P network. These destinations, for example, websites, called Eepsites, are subject to the i2p pseudo-top level domain. The domain name is resolved into an I2P peer key by a proxy named EepProxy. Service providers can use solutions like I2PTunnel to share basic client-server applications in I2P, it also includes support for SOCKS proxies. On the other hand, if an application is peer-to-peer, requires a more sophisticated approach, enhanced anonymity, or performance optimisation, they can write I2P-specific code and achieve tailored solutions. There is also the possibility of embedding I2P into an application.
 
@@ -439,7 +507,7 @@ The infrastructure of Lokinet underlines a popular instant messaging app - Sessi
 \subsection{Other designs}
 There are also newer propositions that aim to address issues with the original onion routing design or with the Tor network, as it is considered a direct successor to the onion routing design. Examples of such networks include HORNET (High-speed onion routing at the Network Layer) \cite{hornet}, TARANET (Traffic-Analysis Resistant Anonymity at the Network Layer) \cite{taranet} and Dovetail \cite{dovetail}. They introduced potential improvements in terms of latency or traffic analysis; although requiring changes in the network layer, they would be difficult to perform.
 
-\section{Summary}
+\section{Classification}
 
 \begin{figure}[ht]
 \centering
@@ -498,3 +566,8 @@ Another important family included in the classification are DC-nets. Although DC
 The other two branches represent the main technical directions in the development of the ACN. Mix-nets (and their modern descendant, Loopix-based networks such as Nym) and onion routing (including classic Tor, Lokinet, and garlic routing solutions such as I2P) are the most influential approaches, each with their own properties and typical use cases. These designs are the most important for understanding practical anonymity online today.
 
 Because the goal of this work is to compare fully functioning and practically relevant ACNs, the following chapters focus on four representative and currently active networks: Tor, I2P, Lokinet, and Nym. These systems illustrate the main architectures and techniques found in modern anonymous communication, and the analysis will show how their design choices affect their strengths, weaknesses, and best application areas.
+
+\section{Summary}
+This chapter has presented an overview of the main technical designs, historical milestones, and representative systems in the area of anonymous communication networks. By covering everything from the earliest single-hop proxies and foundational concepts like Mix-nets, DC-nets, and onion routing, through to the systems used today such as Tor, I2P, Lokinet, and Nym, it has highlighted both the diversity and the progression of technical solutions in the field.
+
+The technical background provided here is not just historical context; it is essential for understanding the strengths, weaknesses, and practical implications of different ACN architectures. In it is crucial for the comparative analysis carried out later in the thesis.  The following chapters build on this material directly.

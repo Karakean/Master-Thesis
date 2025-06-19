@@ -20,22 +20,9 @@ apt install tor deb.torproject.org-keyring
 
 mkdir /var/lib/tor/tcp_latency_onion_service
 mkdir /var/lib/tor/tcp_throughput_onion_service
-# mkdir /var/lib/tor/single_onion_service
+
 chown -R debian-tor /var/lib/tor/
 chmod 700 -R /var/lib/tor/
-
-# cat <<EOF >> /etc/tor/torrc
-# HiddenServiceDir /var/lib/tor/onion_service/
-# HiddenServicePort 5201 127.0.0.1:5201
-# EOF
-
-# cat <<EOF >> /etc/tor/torrc
-# HiddenServiceDir /var/lib/tor/single_onion_service/
-# HiddenServicePort 80 127.0.0.1:80
-# SocksPort 0
-# HiddenServiceNonAnonymousMode 1
-# HiddenServiceSingleHopMode 1
-# EOF
 
 cat <<EOF >> /etc/tor/torrc
 HiddenServiceDir /var/lib/tor/tcp_latency_onion_service/
