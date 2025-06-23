@@ -2,7 +2,7 @@
 \label{chap:AppendixC}
 \addcontentsline{toc}{chapter}{Appendix C: Educational demonstrator: Theory and practical exercises}
 
-This appendix contains the theory and a full set of practical laboratory exercises designed for the educational demonstrator. It begins with a short theoretical introduction to anonymous communication networks, then provides step-by-step instructions for each exercise. The tasks cover both the basics and more advanced use cases, effectively addressing the most important aspects of the thesis. Each exercise includes learning outcomes and questions to help students connect theory with hands-on experience.
+This appendix contains the theory and a full set of practical laboratory exercises designed for the educational demonstrator. It begins with a short theoretical introduction to anonymous communication networks and then provides step-by-step instructions for each exercise. The tasks cover both the basics and more advanced use cases, effectively addressing the most important aspects of the thesis. Each exercise includes learning outcomes and questions to help students connect theory with hands-on experience.
 
 \section*{Theoretical introduction}
 Anonymous communication networks are systems built to hide who is talking to whom. Firstly, deployed were simple solutions like proxies or remailers, where you had to trust the operator not to reveal your identity. This is called \textbf{anonymity by policy} - you are only anonymous if the operator adheres to the rules. History shows that this is not enough, as providers sometimes keep logs or are forced to give up user data. Therefore, these solutions cannot be treated as truly anonymous communication networks.
@@ -23,7 +23,7 @@ The four main ACNs used today are the following:
 
 \textbf{I2P} is a fully peer-to-peer network using garlic routing, which is a variation of onion routing. I2P utilises unidirectional tunnels instead of the bidirectional circuits, and users have a lot of freedom in terms of customising tunnels' parameters: they can change the number of inbound/outbound tunnels for specific purposes, make them longer or shorter, or even choose variation of tunnel length. All of these aspects make traffic analysis more difficult as the users have the plausible deniability - it is hard to tell whether a certain user was receiving message for himself or was he just passing it through. I2P is good for internal hidden services and especially good for anonymous file sharing due to peer-to-peer file sharing protocols support and volume obfuscation techniques described earlier, but it is not the best tool for accessing the clearnet; although there are outproxy services for HTTP and HTTPS, however, they are not always reachable.
 
-\textbf{Lokinet} is anonymous communication networks that similarly to Tor and I2P utilise onion routing architecture, but contrary to them works on the network layer, and therefore support all IP-based protocols. It can in theory work with clearnet, the free exit nodes are often non-functioning but there is a possibility of renting dedicated exit nodes from private sellers or setting up custom exit nodes. The main advantage of the lower layer design is the smaller latency and jitter. Lokinet includes economic incentives for node runners.
+\textbf{Lokinet} is anonymous communication networks that similarly to Tor and I2P uses onion routing architecture, but contrary to it works on the network layer and therefore supports all IP-based protocols. It can in theory work with clearnet, the free exit nodes are often non-functioning but there is a possibility of renting dedicated exit nodes from private sellers or setting up custom exit nodes. The main advantage of the lower layer design is the smaller latency and jitter. Lokinet includes economic incentives for node runners.
 
 \textbf{Nym} is a newest ACN, based on the previously mentioned Loopix. It is made to be resistant to powerful attackers and is best for people who need strong anonymity even if the network is slower. It is accessible as a mode in the NymVPN service, making this network the only officially paid network in this list. Nym includes economic incentives for node runners.
 
@@ -54,7 +54,7 @@ The four main ACNs used today are the following:
 \end{enumerate}
 
 \section*{Exercise 2: Mix-nets and onion routing}
-\textbf{Learning outcomes}: After finishing this exercise, a student should be able to tell the difference between ACNs based on Mix-nets and Onion Routing, along with the advantages and disadvantages of each design. The student should also be able to name a few use cases for each design.
+\textbf{Learning outcomes}: After finishing this exercise, a student should be able to tell the difference between ACNs based on Mix-nets and onion routing, along with the advantages and disadvantages of each design. The student should also be able to name a few use cases for each design.
 \begin{enumerate}
     \item Run the routers analogously to the previous exercise.
     \item Select "anonymous communication network" mode and send 10 messages with numbers from 1 to 10.
@@ -68,7 +68,7 @@ The four main ACNs used today are the following:
     \item Send 5 more messages from 5 to 10.
     \item Enter each node and read the output files.
     \item \textbf{Question}: What do you see? Justify such a state.
-    \item \textbf{Question}: What are the main differences between the Mix-nets and Onion Routing? Which design will be more suitable in case of asynchronous communication or whistleblowing and which will be more suitable in latency-vulnerable use cases such as web browsing or instant messaging?
+    \item \textbf{Question}: What are the main differences between the Mix-nets and onion routing? Which design will be more suitable in case of asynchronous communication or whistleblowing and which will be more suitable in latency-vulnerable use cases such as web browsing or instant messaging?
 \end{enumerate}
 
 \section*{Exercise 3: Browsing clearnet with ACNs}

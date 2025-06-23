@@ -235,3 +235,21 @@
 %odnonik do rozdziau
 \newcommand{\zobrozdz}[1]{(zob. rozdz. \ref{#1})}
 
+% fixing inter-paragraph spacing
+\raggedbottom
+
+% adjusting spacing in list of figures
+\makeatletter
+\renewcommand{\l@figure}[2]{%
+  \vskip 2pt
+  \@dottedtocline{1}{1.5em}{2.3em}{#1}{#2}%
+}
+\makeatother
+
+% adjusting spacing in list of tables
+\makeatletter
+\renewcommand{\l@table}[2]{%
+  \vskip 2pt
+  \@dottedtocline{1}{1.5em}{2.3em}{#1}{#2}%
+}
+\makeatother

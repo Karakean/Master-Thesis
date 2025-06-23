@@ -20,7 +20,7 @@ Some organisations claim they do not retain the content of communications, but o
 According to the European Data Protection Supervisor, privacy is a fundamental human right and a component of a sustainable democracy \cite{privacy-eu}.
 
 \subsubsection{Anonymity by design and anonymity by policy}
-Sometimes service providers, VPN providers in particular, advertise their services as anonymous, although in reality they can deanonymise users on demand; they just claim that they would not do it or that they keep logs of their user activity. However, history shows that such assurances are not always reliable and that users cannot be certain that anonymous service providers will not disclose or sell their information \cite{vpns}. This approach is known as anonymity by policy.
+Sometimes service providers, Virtual Private Network (VPN) service providers in particular, advertise their services as anonymous, although in reality they can deanonymise users on demand; they just claim that they would not do it or that they keep logs of their user activity. However, history shows that such assurances are not always reliable and that users cannot be certain that anonymous service providers will not disclose or sell their information \cite{vpns}. This approach is known as anonymity by policy.
 On the other hand, anonymity by design makes it impossible for the service provider to reveal the identity of the service users by creating a service or network in such a way. In other words, there is no need to trust any third party other than the code itself, which you can verify in most cases because they are usually open source. Proper privacy can only be achieved with anonymity by design.
 
 \subsubsection{Anonymous communication network}
@@ -81,7 +81,7 @@ Quantum cryptography is the science of using quantum mechanics in cryptography. 
 On the other hand, post-quantum cryptography (PQC) refers to the development of cryptographic algorithms that work on traditional machines but that are resistant to potential attacks that use quantum computers.
 
 \subsubsection{Popular cryptographic algorithms and hash functions}
-In the field of cryptography, several algorithms and hash functions are fundamental to the construction of secure systems. Below are the most significant ones relevant to ACNs:
+In the field of cryptography, several algorithms and hash functions are fundamental to the construction of secure systems. The following are the most significant ones relevant to ACNs:
 \begin{itemize}
 \item AES
 \item RSA
@@ -93,13 +93,13 @@ In the field of cryptography, several algorithms and hash functions are fundamen
 \item ECDH
 \item SHA
 \end{itemize}
-\textbf{AES}, or Advanced Encryption Standard, is the most popular block cipher today, considered as a safe symmetric cryptography solution, especially with longest possible 256-bit keys. Due to its popularity, it often has dedicated hardware support.
-\textbf{RSA} is one of the first asymmetric cryptography algorithms and still the most popular one. The name RSA is an abbreviation from its creators' surnames: Rivest, Shamir, Adleman. Its security relies on the difficulty of the factoring problem, which means factoring the product of two large prime numbers. It can be used for both encryption and digital signature.
+\textbf{AES}, or Advanced Encryption Standard, is the most popular block cipher today, considered a safe symmetric cryptography solution, especially with the longest possible 256-bit keys. Due to its popularity, it often has dedicated hardware support.
+\textbf{RSA} is one of the first asymmetric cryptography algorithms and still the most popular. The name RSA is an abbreviation from its creators' surnames: Rivest, Shamir, Adleman. Its security relies on the difficulty of the factoring problem, which means factoring the product of two large prime numbers. It can be used for both encryption and digital signature.
 \textbf{ElGamal} is the second most popular asymmetric cryptography algorithm after RSA. It is based on the discrete logarithm problem. It supports both encryption and digital signatures.
-\textbf{DSA}, or Digital Signature Algorithm, is an asymmetric cryptography algorithm used specifically for the digital signatures, not for the encryption. It is based on the discrete logarithm problem.
-\textbf{ECDSA}, meaning Elliptic Curve DSA, is a variant of DSA utilising elliptic-curve cryptography.
-\textbf{EdDSA}, meaning Edwards-curve DSA, is a variant of DSA utilising Schnorr signature based on twisted Edwards curves. Even though the name might suggest correlation with ECDSA they both are completely different signature schemes. Ed25519 is a specific example of the EdDSA variant and uses the edwards25519 curve, which is related to the popular Montgomery curve Curve25519. 
-\textbf{Diffie-Hellman Key Exchange}, or simply Diffie-Hellman, is a key agreement algorithm that two parties can use to agree on a shared secret. The shared secret is converted into keying material, and the keying material is used as a symmetric encryption key. The Diffie-Hellman key exchange uses the properties of modular arithmetics.
+\textbf{DSA}, or Digital Signature Algorithm, is an asymmetric cryptography algorithm used specifically for digital signatures, not for encryption. It is based on the discrete logarithm problem.
+\textbf{ECDSA}, meaning elliptic-curve DSA, is a variant of DSA that uses elliptic-curve cryptography.
+\textbf{EdDSA}, meaning Edwards-curve DSA, is a variant of DSA utilising Schnorr signature based on twisted Edwards curves. Although the name might suggest correlation with ECDSA, both are completely different signature schemes. Ed25519 is a specific example of the EdDSA variant and uses the edwards25519 curve, which is related to the popular Montgomery curve Curve25519. 
+\textbf{Diffie-Hellman Key Exchange}, or simply Diffie-Hellman (DH), is a key agreement algorithm that two parties can use to agree on a shared secret. The shared secret is converted into keying material, and the keying material is used as a symmetric encryption key. The Diffie-Hellman key exchange uses the properties of modular arithmetics.
 \textbf{ECDH} is an elliptic-curve version of the DH key agreement. Usually, Curve25519 is chosen as a curve because it is fast and not proprietary.
 \textbf{SHA}, or Secure Hash Algorithms, are a family of hash functions. Currently, there are four versions of SHA. \textbf{SHA-0} refers to the original hash function with 160-bit output that was published under the name SHA. \textbf{SHA-1} is an improved version of SHA-0, still using 160 bits. NSA designed it as part of the DSA algorithm. \textbf{SHA-2} is a family of two hash functions designed by NSA: SHA-256 and SHA-512. The postfix in the name determines the length of the output of the hash function (256 bits or 512 bits). There are also modified and truncated versions of these two standards: SHA-224, SHA-384, SHA-512/224, and SHA-512/256.
 \textbf{SHA-3} is the latest hash function of the SHA family, also known as Keccak. Although the hash lengths are the same as in the SHA-2 family, the inner workings of the algorithm are significantly different.
@@ -123,18 +123,18 @@ The ISO/OSI model has the following layers:
 \end{enumerate}
 \textbf{Physical layer} is the first and lowest layer, responsible for the transmission of unstructured data between a device and a transmission medium. The PDU of the physical layer is a bit.
 
-\textbf{Data link layer} is the second layer, responsible for node-to-node data transfer between two directly connected devices. In this layer, two sublayers can be distinguished; \textbf{Media Access Control}, usually implemented in hardware, manages access control, encapsulates and decapsulates data, adds header and trailer, while \textbf{Logical/Data Link Control (LLC/DLC)} is responsible for communication with physical and network layers and for the flow control.The PDU of the data link layer is a frame.
+\textbf{Data link layer} is the second layer, responsible for node-to-node data transfer between two directly connected devices. In this layer, two sublayers can be distinguished; \textbf{Media Access Control}, usually implemented on a hardware, manages access control, encapsulates and decapsulates data, adds header and trailer, while \textbf{Logical/Data Link Control (LLC/DLC)} is responsible for communication with physical and network layers and for flow control. The PDU of the data link layer is a frame.
 In real-world examples, technologies designated for the lowest layers usually cover both the physical and data link layer. Examples include Ethernet, the most popular wired local area network (LAN) technology today, or 802.11, sometimes referred to as Wi-Fi, the most popular wireless LAN technology.
 
-\textbf{Network layer} is the third layer, responsible for addressing hosts, connectionless communication, routing, and relaying messages. It is also the first layer that is "sentient" of the network, which means that there is something outside the current machine or current link. The most popular protocol of this layer is the IP protocol in two versions: IPv4 and IPv6. The PDU of the network layer is a packet.
+\textbf{Network layer} is the third layer, responsible for addressing hosts, ensuring connectionless communication, routing, and relaying messages. It is also the first layer that is "sentient" of the network, which means that there is something outside the current machine or current link. The most popular protocol of this layer is the IP protocol in two versions: IPv4 and IPv6. The PDU of the network layer is a packet.
 
 \textbf{Transport layer} is the fourth layer, responsible for interprocess communication. Its role is to address ports and control connection, flow and errors as well as message multiplexation and demultiplexation. There are two most popular protocols in this layer: TCP, responsible for reliable communication with the cost of delays, and UDP, responsible for unreliable communication, but with smaller delays. The PDU in the transport layer is a segment for TCP and a datagram for UDP.
 
 \textbf{Session layer} is the fifth layer, responsible for maintaining and managing interprocess sessions. The PDU of the session layer is data. 
 
-\textbf{Presentation layer} is the sixth layer, sometimes referred to as the syntax layer, is responsible for translating, coding, and decoding data between applications. The PDU of the presentation layer is also data.
+\textbf{Presentation layer} is the sixth layer, sometimes referred to as the syntax layer, which is responsible for translating, coding, and decoding data between applications. The PDU of the presentation layer is also data.
 
-\textbf{Application layer} is the seventh and the last layer in the ISO/OSI model application layer are responsible for providing an interface for communication between applications. Once again, the PDU of the application layer is data.
+\textbf{Application layer} is the seventh and last layer in the ISO/OSI model application layer that is responsible for providing an interface for communication between applications. Once again, the PDU of the application layer is data.
 
 
 For the sake of simplicity, it can be said that in the TCP/IP model there are four layers that correspond to one or more ISO/OSI layers:
@@ -144,7 +144,7 @@ For the sake of simplicity, it can be said that in the TCP/IP model there are fo
     \item Transport layer
     \item Application layer
 \end{enumerate}
-\textbf{Link layer} is the layer that serves as a combination of ISO/OSI first and second layers. \textbf{Internet layer} is the layer that corresponds to the network layer from the ISO/OSI model. \textbf{Transport layer} corresponds to the layer with the same name from the ISO/OSI model. \textbf{Application layer} combines session, presentation, and application layers from the ISO/OSI model.
+\textbf{Link layer} is the layer that serves as a combination of the first and second layers of ISO/OSI. \textbf{Internet layer} is the layer that corresponds to the network layer of the ISO / OSI model. \textbf{Transport layer} corresponds to the layer with the same name from the ISO/OSI model. \textbf{Application layer} combines the sessions, presentations and application layers of the ISO / OSI model.
 
 The ISO/OSI was a model created from the ground up in the late 1970s and early 1980s as a framework based on the set of tasks that needs to be fulfilled in order to have reliable communication and each layer in this model was assigned a specific role. One of the most criticised elements of the ISO/OSI model were layers 5 and 6 which were thought to be an exaggeration, as they can be easily integrated with the application layer. That is also why often, when referring to the application layer, the fifth, sixth, and seventh layers are grouped together. Regardless of the criticism, the model is still used as a reference model.
 

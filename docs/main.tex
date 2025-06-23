@@ -1,12 +1,12 @@
 \documentclass[10pt, twoside, a4paper,openany]{book}
 \usepackage{macra_xelatex}
 \usepackage{forest}
+\usepackage{tikz}
+\usetikzlibrary{shapes, arrows.meta, positioning, backgrounds}
 
 \begin{document}
-\includepdf{Chapters/Strona_tytulowa.pdf}
-\includepdf{Chapters/Oswiadczenie.pdf}
+\includepdf{Chapters/Title.pdf}
 
-\input{Chapters/Streszczenie}
 \input{Chapters/Abstract}
 
 \tableofcontents
@@ -34,5 +34,6 @@
 \input{Chapters/AppendixA}
 \input{Chapters/AppendixB}
 \input{Chapters/AppendixC}
+\input{Chapters/AppendixD}
 
 \end{document}
